@@ -69,6 +69,15 @@ desktop.ini
 *.tsbuildinfo
 next-env.d.ts
 
+# ── Project-specific temp & debug files ───
+tmp*.ts
+tmp*.txt
+tsc*.txt
+tsc*.log
+typescript-errors*.txt
+test-db.js
+.env.local.example.bak
+
 # ── Misc ──────────────────────────────────
 .cache/
 .temp/
