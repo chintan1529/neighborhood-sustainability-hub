@@ -1,0 +1,180 @@
+﻿src/app/actions/admin.ts(92,19): error TS2322: Type 'string' is not assignable to type 'ChallengeStatus | undefined'.
+src/app/actions/admin.ts(158,13): error TS2769: No overload matches this call.
+  Overload 2 of 2, '(values: { id?: string | undefined; title: string; description?: string | null | undefined; short_description?: string | null | undefined; type: WorkshopType; status?: WorkshopStatus | undefined; ... 12 more ...; updated_at?: string | undefined; }[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'title' does not exist in type '{ id?: string | undefined; title: string; description?: string | null | undefined; short_description?: string | null | undefined; type: WorkshopType; status?: WorkshopStatus | undefined; ... 12 more ...; updated_at?: string | undefined; }[]'.
+src/app/actions/admin.ts(199,19): error TS2322: Type 'string' is not assignable to type 'WorkshopStatus | undefined'.
+src/app/actions/complaints.ts(32,57): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: { id?: string | undefined; user_id: string; neighborhood_id?: string | null | undefined; category: ComplaintCategory; status?: ComplaintStatus | undefined; ... 14 more ...; updated_at?: string | undefined; }, options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Type 'string' is not assignable to type 'ComplaintCategory'.
+  Overload 2 of 2, '(values: { id?: string | undefined; user_id: string; neighborhood_id?: string | null | undefined; category: ComplaintCategory; status?: ComplaintStatus | undefined; ... 14 more ...; updated_at?: string | undefined; }[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type '{ id?: string | undefined; user_id: string; neighborhood_id?: string | null | undefined; category: ComplaintCategory; status?: ComplaintStatus | undefined; ... 14 more ...; updated_at?: string | undefined; }[]'.
+src/app/admin/badges/page.tsx(121,56): error TS2339: Property 'category' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(126,48): error TS2339: Property 'rarity' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(137,54): error TS2551: Property 'points_required' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'. Did you mean 'points_reward'?
+src/app/admin/badges/page.tsx(176,78): error TS2339: Property 'category' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(181,55): error TS2339: Property 'rarity' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(182,59): error TS2339: Property 'rarity' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(183,63): error TS2339: Property 'rarity' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(187,52): error TS2339: Property 'rarity' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'.
+src/app/admin/badges/page.tsx(190,55): error TS2551: Property 'points_required' does not exist on type '{ id: string; name: string; slug: string; description: string | null; icon_url: string | null; color: string; requirements: Json; points_reward: number; tier: number; is_active: boolean; sort_order: number; created_at: string; updated_at: string; }'. Did you mean 'points_reward'?
+src/app/admin/challenges/page.tsx(147,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/challenges/page.tsx(156,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/challenges/page.tsx(164,51): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/complaints/client.tsx(4,29): error TS6133: 'CardHeader' is declared but its value is never read.
+src/app/admin/complaints/client.tsx(4,41): error TS6133: 'CardTitle' is declared but its value is never read.
+src/app/admin/complaints/client.tsx(8,1): error TS6192: All imports in import declaration are unused.
+src/app/admin/complaints/client.tsx(61,5): error TS6133: 'admins' is declared but its value is never read.
+src/app/admin/complaints/page.tsx(33,13): error TS2322: Type '{ id: string; user_id: string; neighborhood_id: string | null; category: ComplaintCategory; status: ComplaintStatus; priority: number; title: string; ... 14 more ...; assigned_profile: SelectQueryError<...>; }[]' is not assignable to type 'Complaint[]'.
+  Type '{ id: string; user_id: string; neighborhood_id: string | null; category: ComplaintCategory; status: ComplaintStatus; priority: number; title: string; ... 14 more ...; assigned_profile: SelectQueryError<...>; }' is not assignable to type 'Complaint'.
+    The types of 'profiles.full_name' are incompatible between these types.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/admin/complaints/page.tsx(34,13): error TS2322: Type '{ id: string; full_name: string | null; }[]' is not assignable to type '{ id: string; full_name: string; }[]'.
+  Type '{ id: string; full_name: string | null; }' is not assignable to type '{ id: string; full_name: string; }'.
+    Types of property 'full_name' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/admin/reviews/page.tsx(10,1): error TS6133: 'Badge' is declared but its value is never read.
+src/app/admin/transfer-stations/client.tsx(6,1): error TS6133: 'Button' is declared but its value is never read.
+src/app/admin/transfer-stations/page.tsx(27,13): error TS2322: Type '{ id: string; name: string; code: string | null; latitude: number; longitude: number; address_text: string | null; capacity_tons: number; current_load_tons: number; operating_hours: string; ... 6 more ...; updated_at: string; }[]' is not assignable to type 'TransferStation[]'.
+  Type '{ id: string; name: string; code: string | null; latitude: number; longitude: number; address_text: string | null; capacity_tons: number; current_load_tons: number; operating_hours: string; ... 6 more ...; updated_at: string; }' is not assignable to type 'TransferStation'.
+    Types of property 'code' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/admin/transfer-stations/page.tsx(28,13): error TS2322: Type '{ latitude: number; longitude: number; confirmed_class: WasteCategory | null; created_at: string; }[]' is not assignable to type 'RecentReport[]'.
+  Type '{ latitude: number; longitude: number; confirmed_class: WasteCategory | null; created_at: string; }' is not assignable to type 'RecentReport'.
+    Types of property 'confirmed_class' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/admin/users/page.tsx(14,16): error TS6133: 'CardContent' is declared but its value is never read.
+src/app/admin/users/page.tsx(135,59): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/users/page.tsx(144,59): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/workshops/page.tsx(14,18): error TS6133: 'CalendarDays' is declared but its value is never read.
+src/app/admin/workshops/page.tsx(14,46): error TS6133: 'MapPin' is declared but its value is never read.
+src/app/admin/workshops/page.tsx(14,54): error TS6133: 'Video' is declared but its value is never read.
+src/app/admin/workshops/page.tsx(14,61): error TS6133: 'Building' is declared but its value is never read.
+src/app/admin/workshops/page.tsx(205,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/workshops/page.tsx(214,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/workshops/page.tsx(223,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/workshops/page.tsx(232,55): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/admin/workshops/page.tsx(240,51): error TS2322: Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; success?: undefined; } | { success: boolean; error?: undefined; }' is not assignable to type 'void'.
+          Type '{ error: string; success?: undefined; }' is not assignable to type 'void'.
+src/app/api/waste-insights/route.ts(5,27): error TS6133: 'request' is declared but its value is never read.
+src/app/api/waste-priority/route.ts(33,32): error TS2345: Argument of type 'string' is not assignable to parameter of type 'NonNullable<ReportStatus>'.
+src/app/auth/login/page.tsx(7,10): error TS6133: 'Leaf' is declared but its value is never read.
+src/app/auth/login/page.tsx(32,11): error TS6133: 'router' is declared but its value is never read.
+src/app/auth/signup/page.tsx(37,11): error TS6133: 'router' is declared but its value is never read.
+src/app/collector/jobs/[id]/page.tsx(162,37): error TS2322: Type 'null' is not assignable to type 'string'.
+src/app/collector/messages/page.tsx(3,55): error TS6133: 'User' is declared but its value is never read.
+src/app/collector/messages/page.tsx(193,63): error TS2345: Argument of type 'string | null | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+src/app/collector/page.tsx(6,18): error TS6133: 'Clock' is declared but its value is never read.
+src/app/collector/page.tsx(6,25): error TS6133: 'CheckCircle' is declared but its value is never read.
+src/app/collector/page.tsx(8,1): error TS6133: 'WASTE_CATEGORIES' is declared but its value is never read.
+src/app/collector/routes/page.tsx(5,20): error TS6133: 'Route' is declared but its value is never read.
+src/app/collector/settings/page.tsx(23,17): error TS2322: Type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]' is not assignable to type '{ email: boolean; push: boolean; sms: boolean; }'.
+  Type 'string' is not assignable to type '{ email: boolean; push: boolean; sms: boolean; }'.
+src/app/info/layout.tsx(4,1): error TS6133: 'redirect' is declared but its value is never read.
+src/app/info/layout.tsx(6,10): error TS6133: 'Recycle' is declared but its value is never read.
+src/app/info/layout.tsx(49,79): error TS2322: Type '{ full_name: string; email: string; avatar_url: string | null | undefined; }' is not assignable to type '{ full_name: string | null; email: string | null; avatar_url: string | null; }'.
+  Types of property 'avatar_url' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | null'.
+      Type 'undefined' is not assignable to type 'string | null'.
+src/app/info/page.tsx(3,20): error TS6133: 'useEffect' is declared but its value is never read.
+src/app/resident/challenges/page.tsx(110,43): error TS2322: Type '(formData: FormData) => Promise<{ error: string; }>' is not assignable to type 'string | ((formData: FormData) => void | Promise<void>) | undefined'.
+  Type '(formData: FormData) => Promise<{ error: string; }>' is not assignable to type '(formData: FormData) => void | Promise<void>'.
+    Type 'Promise<{ error: string; }>' is not assignable to type 'void | Promise<void>'.
+      Type 'Promise<{ error: string; }>' is not assignable to type 'Promise<void>'.
+        Type '{ error: string; }' is not assignable to type 'void'.
+src/app/resident/messages/page.tsx(193,63): error TS2345: Argument of type 'string | null | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+src/app/resident/notifications/page.tsx(3,31): error TS6133: 'Filter' is declared but its value is never read.
+src/app/resident/notifications/page.tsx(4,29): error TS6133: 'CardDescription' is declared but its value is never read.
+src/app/resident/notifications/page.tsx(4,46): error TS6133: 'CardHeader' is declared but its value is never read.
+src/app/resident/notifications/page.tsx(4,58): error TS6133: 'CardTitle' is declared but its value is never read.
+src/app/resident/page.tsx(9,5): error TS6133: 'BookOpen' is declared but its value is never read.
+src/app/resident/profile/page.tsx(68,71): error TS18047: 'profile' is possibly 'null'.
+src/app/resident/profile/page.tsx(72,71): error TS18047: 'profile' is possibly 'null'.
+src/app/resident/settings/notifications/page.tsx(2,21): error TS6133: 'Bell' is declared but its value is never read.
+src/app/resident/workshops/[id]/page.tsx(234,33): error TS2322: Type 'boolean | 0 | null' is not assignable to type 'boolean | undefined'.
+  Type 'null' is not assignable to type 'boolean | undefined'.
+src/components/admin/analytics-charts.tsx(6,5): error TS6133: 'BarChart' is declared but its value is never read.
+src/components/admin/analytics-charts.tsx(7,5): error TS6133: 'Bar' is declared but its value is never read.
+src/components/admin/analytics-charts.tsx(67,7): error TS6133: 'CATEGORY_COLORS' is declared but its value is never read.
+src/components/dashboard/collector-map-client.tsx(5,16): error TS6133: 'CardContent' is declared but its value is never read.
+src/components/dashboard/impact-dashboard.tsx(74,5): error TS6133: 'badgeCount' is declared but its value is never read.
+src/components/dashboard/impact-dashboard.tsx(77,5): error TS6133: 'rank' is declared but its value is never read.
+src/components/dashboard/impact-dashboard.tsx(91,11): error TS6133: 'milestoneProgress' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(6,29): error TS6133: 'CardHeader' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(6,41): error TS6133: 'CardTitle' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(12,5): error TS6133: 'Loader2' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(100,11): error TS6133: 'handleClaim' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(100,32): error TS6133: 'reportId' is declared but its value is never read.
+src/components/dashboard/priority-queue-client.tsx(102,19): error TS6133: 'res' is declared but its value is never read.
+src/components/dashboard/recent-reports.tsx(64,51): error TS6133: 'index' is declared but its value is never read.
+src/components/dashboard/route-optimizer-map.tsx(5,1): error TS6133: 'Skeleton' is declared but its value is never read.
+src/components/dashboard/route-optimizer-map.tsx(14,5): error TS6133: 'Zap' is declared but its value is never read.
+src/components/dashboard/route-optimizer-map.tsx(99,12): error TS6133: 'mapReady' is declared but its value is never read.
+src/components/layout/notification-bell.tsx(4,108): error TS6133: 'Settings' is declared but its value is never read.
+src/components/layout/sidebar.tsx(7,1): error TS6133: 'ScrollArea' is declared but its value is never read.
+src/components/messages/chat-interface.tsx(144,35): error TS2802: Type 'Set<unknown>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+src/components/messages/new-conversation-dialog.tsx(5,60): error TS6133: 'X' is declared but its value is never read.
+src/components/report/report-wizard.tsx(3,28): error TS6133: 'useEffect' is declared but its value is never read.
+src/components/report/report-wizard.tsx(8,19): error TS6133: 'Camera' is declared but its value is never read.
+src/components/report/report-wizard.tsx(8,27): error TS6133: 'MapPin' is declared but its value is never read.
+src/components/report/report-wizard.tsx(22,10): error TS6133: 'AchievementCelebration' is declared but its value is never read.
+src/components/report/report-wizard.tsx(42,12): error TS6133: 'unlockedBadges' is declared but its value is never read.
+src/components/report/report-wizard.tsx(47,11): error TS6133: 'supabase' is declared but its value is never read.
+src/components/report/report-wizard.tsx(108,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<WasteCategory, { label: string; color: string; icon: string; description: string; }>'.
+src/components/report/report-wizard.tsx(113,59): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<WasteCategory, { label: string; color: string; icon: string; description: string; }>'.
+src/lib/predictive-engine.ts(849,25): error TS2698: Spread types may only be created from object types.
+vitest.config.ts(2,19): error TS2307: Cannot find module '@vitejs/plugin-react' or its corresponding type declarations.
