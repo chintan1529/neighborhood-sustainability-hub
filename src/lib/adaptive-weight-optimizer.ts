@@ -298,7 +298,7 @@ export async function optimizeAdaptiveWeights(
     .from("prediction_feedback_records")
     .select("*")
     .gte("evaluated_at", args.cycleStartedAt)
-    .lt("evaluated_at", args.cycleEndedAt)
+    .lte("evaluated_at", args.cycleEndedAt)
     .order("evaluated_at", { ascending: true });
 
   const typedRows = (feedbackRows ?? []) as PredictionFeedbackRecord[];

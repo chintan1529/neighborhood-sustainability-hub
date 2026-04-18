@@ -403,7 +403,7 @@ async function recordFeedbackCycle(
     .select("*")
     .eq("zone_id", zoneId)
     .gte("evaluated_at", cycleStart)
-    .lt("evaluated_at", cycleEndedAt);
+    .lte("evaluated_at", cycleEndedAt);
 
   const cycleFeedback = (feedbackRows ?? []) as Array<{ status: string }>;
   if (cycleFeedback.length === 0) {

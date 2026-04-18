@@ -17,7 +17,8 @@
     "supabase:start": "npx supabase start",
     "supabase:stop": "npx supabase stop",
     "supabase:reset": "npx supabase db reset",
-    "supabase:types": "npx supabase gen types typescript --local > src/types/database.ts"
+    "supabase:types": "npx supabase gen types typescript --local > src/types/database.ts",
+    "seed": "npx tsx --env-file=.env.local scripts/seed-synthetic-data.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
