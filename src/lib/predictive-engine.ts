@@ -4,6 +4,7 @@ import type { Database, WasteCategory } from "@/types/database";
 import { haversineKm } from "@/lib/utils";
 import {
   type AdaptiveFeatureScores,
+  FEATURE_KEYS,
   computeConfidence,
   getAdaptiveWeights,
   optimizeAdaptiveWeights,
@@ -15,7 +16,7 @@ const HOTSPOT_NEARBY_RADIUS_KM = 0.6;
 const PREDICTION_REFRESH_RADIUS_KM = 0.45;
 const MAX_REPORTS_FOR_CONTEXT = 1500;
 const MAX_CANDIDATES = 8;
-const MIN_REPORTS_PER_CLUSTER = 1;
+const MIN_REPORTS_PER_CLUSTER = 2;
 const DEFAULT_CONFIDENCE_THRESHOLD = Number(
   process.env.PREDICTION_CONFIDENCE_THRESHOLD ?? "0.6",
 );
@@ -63,6 +64,8 @@ export interface PredictionCandidate {
   longitude: number;
   predicted_category: WasteCategory;
   base_confidence: number;
+  confidence_lower: number;
+  confidence_upper: number;
   final_weight: number;
   target_date: string;
   reason: string;
@@ -682,6 +685,17 @@ function buildDeterministicPredictions(
         0.97,
       );
 
+      // Confidence interval: variance from sub-signal disagreement
+      const featureValues = FEATURE_KEYS.map((k) => featureScores[k]);
+      const featureMean = featureValues.reduce((a, b) => a + b, 0) / featureValues.length;
+      const featureVariance = featureValues.reduce((sum, v) => sum + (v - featureMean) ** 2, 0) / featureValues.length;
+      const featureStdDev = Math.sqrt(featureVariance);
+      // Wider interval for sparser data (fewer reports = more uncertainty)
+      const sparsityFactor = clamp(1.5 / Math.sqrt(Math.max(cluster.reportCount, 1)), 0.3, 1.5);
+      const intervalHalfWidth = clamp(featureStdDev * sparsityFactor + (1 - verificationFactor) * 0.1, 0.03, 0.25);
+      const confidenceLower = clamp(baseConfidence - intervalHalfWidth, 0.05, baseConfidence);
+      const confidenceUpper = clamp(baseConfidence + intervalHalfWidth, baseConfidence, 0.99);
+
       const urgencyBoost = clamp(cluster.recent24hCount / 3, 0, 0.18);
       const finalWeight = clamp(
         baseConfidence *
@@ -701,6 +715,7 @@ function buildDeterministicPredictions(
         `${cluster.recent7dCount} reports in the last 7d`,
         `${Math.round(cluster.categoryDominance * 100)}% ${cluster.dominantCategory} concentration`,
         `${Math.round(verificationFactor * 100)}% historical zone verification`,
+        `confidence band: [${round(confidenceLower, 2)}–${round(confidenceUpper, 2)}]`,
       ];
 
       if (cluster.hourConcentration >= 0.3) {
@@ -715,6 +730,8 @@ function buildDeterministicPredictions(
         longitude: cluster.longitude,
         predicted_category: cluster.dominantCategory,
         base_confidence: round(baseConfidence, 3),
+        confidence_lower: round(confidenceLower, 3),
+        confidence_upper: round(confidenceUpper, 3),
         final_weight: round(finalWeight, 3),
         target_date: getNextTargetDate(
           cluster.peakHourUtc,
@@ -932,6 +949,8 @@ export async function generatePredictions(options?: {
       confidence_threshold:
         selectedRows.find((row) => row.candidate.geohash === prediction.geohash)
           ?.threshold ?? confidenceThreshold,
+      confidence_lower: prediction.confidence_lower,
+      confidence_upper: prediction.confidence_upper,
       report_count: prediction.report_count,
       features: prediction.feature_scores,
       rescued_from_threshold: rescuedCount > 0,

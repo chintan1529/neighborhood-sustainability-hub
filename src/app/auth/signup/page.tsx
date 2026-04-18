@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { User, Truck, Store, ArrowRight, ChevronRight } from "lucide-react";
+import { User, Truck, Store, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function SignupSelectorPage() {

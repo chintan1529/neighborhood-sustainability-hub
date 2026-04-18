@@ -186,14 +186,30 @@ def plot_history(history_table, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     plt.figure(figsize=(8, 4))
-    plt.plot(history_table["iteration"], history_table["precision"], marker="o", linewidth=2)
+    plt.plot(history_table["iteration"], history_table["precision"], marker="o", linewidth=2, label="Adaptive Precision")
+    if "static_precision" in history_table.columns:
+        plt.plot(history_table["iteration"], history_table["static_precision"], marker="x", linestyle="--", color="gray", label="Static Precision")
     plt.title("Precision vs Iteration")
     plt.xlabel("Iteration")
     plt.ylabel("Precision")
     plt.grid(alpha=0.3)
+    plt.legend()
     plt.tight_layout()
     plt.savefig(output_dir / "precision_vs_iteration.png", dpi=150)
     plt.close()
+    
+    if "static_f1_score" in history_table.columns:
+        plt.figure(figsize=(8, 4))
+        plt.plot(history_table["iteration"], history_table["f1_score"], marker="o", linewidth=2, color="green", label="Adaptive F1")
+        plt.plot(history_table["iteration"], history_table["static_f1_score"], marker="x", linestyle="--", color="gray", label="Static F1")
+        plt.title("F1 Score: Adaptive vs Static Baseline")
+        plt.xlabel("Iteration")
+        plt.ylabel("F1 Score")
+        plt.grid(alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(output_dir / "f1_score_comparison.png", dpi=150)
+        plt.close()
 
     plt.figure(figsize=(9, 5))
     for feature in FEATURE_NAMES:
@@ -227,6 +243,9 @@ def run_simulation(
     actual_history = np.zeros((0, n_zones), dtype=float)
     weight_rows: List[Dict[str, float]] = []
     prediction_rows: List[Dict[str, float]] = []
+    
+    # Static baseline (equal weights)
+    static_weights = normalize_weights(np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float))
 
     for iteration in range(1, n_iterations + 1):
         feature_matrix = build_cycle_features(base_profiles, actual_history, rng)
@@ -240,6 +259,14 @@ def run_simulation(
         if np.sum(predicted_mask) == 0:
             top_zone = int(np.argmax(confidences))
             predicted_mask[top_zone] = True
+
+        # Static baseline predictions
+        static_confidences = compute_confidence(feature_matrix, static_weights)
+        static_predicted_mask = static_confidences >= prediction_threshold
+        if np.sum(static_predicted_mask) == 0:
+            top_zone_static = int(np.argmax(static_confidences))
+            static_predicted_mask[top_zone_static] = True
+        static_metrics = compute_metrics(static_predicted_mask, actual_mask)
 
         metrics = compute_metrics(predicted_mask, actual_mask)
         verified_features = feature_matrix[predicted_mask & actual_mask]
@@ -272,6 +299,8 @@ def run_simulation(
                 "precision": round(metrics["precision"], 4),
                 "recall": round(metrics["recall"], 4),
                 "f1_score": round(metrics["f1_score"], 4),
+                "static_f1_score": round(static_metrics["f1_score"], 4),
+                "static_precision": round(static_metrics["precision"], 4),
                 "verified": metrics["verified"],
                 "missed": metrics["missed"],
                 "actual_hotspots": metrics["actual_hotspots"],
@@ -314,9 +343,17 @@ def print_summary(results) -> None:
         print("\nWeight table per iteration\n")
         print(weights_history[columns].to_string(index=False))
 
-        improvement = weights_history[["iteration", "precision"]]
-        print("\nPrecision improvement over time\n")
+        improvement = weights_history[["iteration", "precision", "static_precision", "f1_score", "static_f1_score"]]
+        print("\nPerformance vs Static Baseline over time\n")
         print(improvement.to_string(index=False))
+        
+        start_f1 = weights_history.iloc[0]["f1_score"]
+        end_f1 = weights_history.iloc[-1]["f1_score"]
+        static_f1 = weights_history.iloc[-1]["static_f1_score"]
+        f1_improvement = ((end_f1 - static_f1) / max(static_f1, 0.001)) * 100
+        
+        print(f"\nFinal Adaptive F1: {end_f1:.4f} vs Static F1: {static_f1:.4f}")
+        print(f"Improvement over baseline: {f1_improvement:.2f}%")
     else:
         print(weights_history)
 

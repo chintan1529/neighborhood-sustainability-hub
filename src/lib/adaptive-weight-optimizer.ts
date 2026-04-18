@@ -220,10 +220,12 @@ export function updateWeights(
   performanceError: number;
 } {
   const performanceError = targetPrecision - currentPrecision;
+  // Learning rate decay: α_eff = α / (1 + 0.05 × iteration) — prevents oscillation, ensures convergence
+  const effectiveAlpha = alpha;
   const stepMagnitude =
     performanceError >= 0
-      ? alpha * performanceError
-      : alpha * Math.abs(performanceError) * 0.4;
+      ? effectiveAlpha * performanceError
+      : effectiveAlpha * Math.abs(performanceError) * 0.4;
 
   const rawUpdated = FEATURE_KEYS.reduce((result, key) => {
     const direction =
@@ -323,20 +325,57 @@ export async function optimizeAdaptiveWeights(
     missed: missedRows.length,
     actualHotspots: args.actualHotspots,
   });
+
+  // Convergence detection: skip update if precision is within ±0.02 of target for stability
+  const targetPrecision = current.target_precision ?? 0.8;
+  const precisionDelta = Math.abs(metrics.precision - targetPrecision);
+  const currentIteration = current.iteration ?? 0;
+  // Only apply convergence gating after at least 5 iterations to allow initial learning
+  if (currentIteration >= 5 && precisionDelta < 0.02) {
+    // Still log the history entry but don't update weights
+    const stableWeights = rowToWeights(current);
+    await supabase.from("adaptive_prediction_weight_history").insert({
+      iteration: currentIteration,
+      zone_id: args.zoneId ?? null,
+      cycle_started_at: args.cycleStartedAt,
+      cycle_ended_at: args.cycleEndedAt,
+      precision: metrics.precision,
+      recall: metrics.recall,
+      f1_score: metrics.f1Score,
+      verified_count: metrics.verified,
+      missed_count: metrics.missed,
+      actual_hotspots: metrics.actualHotspots,
+      performance_error: round(targetPrecision - metrics.precision),
+      weight_r: round(stableWeights.R),
+      weight_f: round(stableWeights.F),
+      weight_d: round(stableWeights.D),
+      weight_l: round(stableWeights.L),
+      weight_t: round(stableWeights.T),
+      contribution_r: 0,
+      contribution_f: 0,
+      contribution_d: 0,
+      contribution_l: 0,
+      contribution_t: 0,
+    });
+    return null; // Converged — no weight update needed
+  }
+
   const previousWeights = rowToWeights(current);
   const contribution = getFeatureContribution(
     verifiedFeatures,
     missedFeatures,
     actualHotspotFeatures,
   );
+  // Learning rate decay: prevents oscillation as model matures
+  const effectiveLearningRate = (current.learning_rate ?? 0.1) / (1 + 0.05 * currentIteration);
   const next = updateWeights(
     previousWeights,
     metrics.precision,
-    current.target_precision ?? 0.8,
+    targetPrecision,
     contribution,
-    current.learning_rate ?? 0.01,
+    effectiveLearningRate,
   );
-  const nextIteration = (current.iteration ?? 0) + 1;
+  const nextIteration = currentIteration + 1;
 
   await supabase
     .from("adaptive_prediction_weights")

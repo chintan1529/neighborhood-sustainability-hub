@@ -27,9 +27,20 @@ interface OptimizedStop {
   estimatedTimeFromPrev: number; // minutes
   cumulativeDistance: number;
   cumulativeTime: number;
+  cumulativeWeightKg: number;
+  estimatedWeightKg: number;
+  capacityWarning: boolean;
   priorityScore: number;
   priorityReason: string;
 }
+
+// Estimated weight per pickup based on quantity descriptor
+const QUANTITY_WEIGHT_KG: Record<string, number> = {
+  small: 5,
+  medium: 15,
+  large: 40,
+  bulk: 80,
+};
 
 // ───── Geo Helpers ─────
 function haversineDistance(
@@ -149,14 +160,17 @@ function twoOptImprove(tour: number[], distMatrix: number[][]): number[] {
     improved = false;
     for (let i = 1; i < n - 1; i++) {
       for (let j = i + 1; j < n; j++) {
-        const current =
-          distMatrix[bestTour[i - 1]][bestTour[i]] +
-          distMatrix[bestTour[j]][bestTour[(j + 1) % n] || bestTour[j]];
-        const swapped =
-          distMatrix[bestTour[i - 1]][bestTour[j]] +
-          distMatrix[bestTour[i]][bestTour[(j + 1) % n] || bestTour[i]];
+        // Open-path TSP: no wrap-around to start
+        const segEnd = j + 1 < n ? bestTour[j + 1] : -1;
 
-        if (swapped < current) {
+        const currentCost =
+          distMatrix[bestTour[i - 1]][bestTour[i]] +
+          (segEnd >= 0 ? distMatrix[bestTour[j]][segEnd] : 0);
+        const swappedCost =
+          distMatrix[bestTour[i - 1]][bestTour[j]] +
+          (segEnd >= 0 ? distMatrix[bestTour[i]][segEnd] : 0);
+
+        if (swappedCost < currentCost - 1e-9) {
           // Reverse the segment between i and j
           const reversed = bestTour.slice(i, j + 1).reverse();
           bestTour = [
@@ -181,11 +195,16 @@ export async function POST(request: NextRequest) {
       collectorLat,
       collectorLng,
       reports: initialReports,
+      maxCapacityKg,
     }: {
       collectorLat: number;
       collectorLng: number;
       reports: ReportLocation[];
+      maxCapacityKg?: number;
     } = body;
+
+    // Vehicle capacity constraint (default 500kg)
+    const vehicleCapacity = maxCapacityKg ?? 500;
 
     if (!collectorLat || !collectorLng || !initialReports) {
       return NextResponse.json(
@@ -335,6 +354,7 @@ export async function POST(request: NextRequest) {
     const stops: OptimizedStop[] = [];
     let cumulativeDistance = 0;
     let cumulativeTime = 0;
+    let cumulativeWeightKg = 0;
 
     for (let i = 0; i < orderedStops.length; i++) {
       const reportIdx = orderedStops[i] - 1; // Adjust for collector offset
@@ -345,6 +365,18 @@ export async function POST(request: NextRequest) {
 
       cumulativeDistance += dist;
       cumulativeTime += timeMinutes + 5; // +5 min per stop for pickup
+
+      // Calculate weight for this stop
+      const estimatedWeightKg = report.isTransferStation 
+        ? 0 
+        : QUANTITY_WEIGHT_KG[report.quantity?.toLowerCase() || "medium"] || 15;
+      
+      // Reset capacity if we hit a transfer station, otherwise accumulate
+      if (report.isTransferStation) {
+        cumulativeWeightKg = 0;
+      } else {
+        cumulativeWeightKg += estimatedWeightKg;
+      }
 
       const priority = priorities.get(report.id) || {
         score: 0.5,
@@ -358,6 +390,9 @@ export async function POST(request: NextRequest) {
         estimatedTimeFromPrev: Math.round(timeMinutes),
         cumulativeDistance: Math.round(cumulativeDistance * 100) / 100,
         cumulativeTime: Math.round(cumulativeTime),
+        cumulativeWeightKg: Math.round(cumulativeWeightKg),
+        estimatedWeightKg,
+        capacityWarning: cumulativeWeightKg > vehicleCapacity,
         priorityScore: Math.round(priority.score * 100) / 100,
         priorityReason: priority.reason,
       });
