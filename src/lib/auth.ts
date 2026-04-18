@@ -3,26 +3,26 @@
 // Use these in Server Actions and API Routes to eliminate boilerplate.
 // ============================================================================
 
-import { createClient, createAdminClient } from '@/lib/supabase/server';
-import type { UserRole } from '@/types/database';
+import { createClient, createAdminClient } from "@/lib/supabase/server";
+import type { UserRole } from "@/types/database";
 
 export interface AuthenticatedUser {
-    id: string;
-    email: string;
+  id: string;
+  email: string;
 }
 
 export interface AuthenticatedProfile {
-    user: AuthenticatedUser;
-    profile: {
-        role: UserRole;
-        neighborhood_id: string | null;
-        full_name: string | null;
-    };
+  user: AuthenticatedUser;
+  profile: {
+    role: UserRole;
+    neighborhood_id: string | null;
+    full_name: string | null;
+  };
 }
 
 export type AuthResult<T> =
-    | { success: true; data: T }
-    | { success: false; error: string };
+  | { success: true; data: T }
+  | { success: false; error: string };
 
 /**
  * Require an authenticated user. Returns the user or an error object.
@@ -34,40 +34,43 @@ export type AuthResult<T> =
  * const { user, profile } = auth.data;
  */
 export async function requireAuth(): Promise<AuthResult<AuthenticatedProfile>> {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-        return { success: false, error: 'Not authenticated' };
-    }
+  if (authError || !user) {
+    return { success: false, error: "Not authenticated" };
+  }
 
-    const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, neighborhood_id, full_name')
-        .eq('id', user.id)
-        .single();
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("role, neighborhood_id, full_name")
+    .eq("id", user.id)
+    .single();
 
-    const profile = profileData as {
-        role: string;
-        neighborhood_id: string | null;
-        full_name: string | null;
-    } | null;
+  const profile = profileData as {
+    role: string;
+    neighborhood_id: string | null;
+    full_name: string | null;
+  } | null;
 
-    if (profileError || !profile) {
-        return { success: false, error: 'Profile not found' };
-    }
+  if (profileError || !profile) {
+    return { success: false, error: "Profile not found" };
+  }
 
-    return {
-        success: true,
-        data: {
-            user: { id: user.id, email: user.email! },
-            profile: {
-                role: profile.role as UserRole,
-                neighborhood_id: profile.neighborhood_id,
-                full_name: profile.full_name,
-            },
-        },
-    };
+  return {
+    success: true,
+    data: {
+      user: { id: user.id, email: user.email! },
+      profile: {
+        role: profile.role as UserRole,
+        neighborhood_id: profile.neighborhood_id,
+        full_name: profile.full_name,
+      },
+    },
+  };
 }
 
 /**
@@ -80,25 +83,27 @@ export async function requireAuth(): Promise<AuthResult<AuthenticatedProfile>> {
  * const { adminClient, user, profile } = auth.data;
  */
 export async function requireAdmin(): Promise<
-    AuthResult<AuthenticatedProfile & { adminClient: ReturnType<typeof createAdminClient> }>
+  AuthResult<
+    AuthenticatedProfile & { adminClient: ReturnType<typeof createAdminClient> }
+  >
 > {
-    const authResult = await requireAuth();
+  const authResult = await requireAuth();
 
-    if (!authResult.success) {
-        return authResult;
-    }
+  if (!authResult.success) {
+    return authResult;
+  }
 
-    if (authResult.data.profile.role !== 'admin') {
-        return { success: false, error: 'Unauthorized — Admin access required' };
-    }
+  if (authResult.data.profile.role !== "admin") {
+    return { success: false, error: "Unauthorized — Admin access required" };
+  }
 
-    return {
-        success: true,
-        data: {
-            ...authResult.data,
-            adminClient: createAdminClient(),
-        },
-    };
+  return {
+    success: true,
+    data: {
+      ...authResult.data,
+      adminClient: createAdminClient(),
+    },
+  };
 }
 
 /**
@@ -109,20 +114,20 @@ export async function requireAdmin(): Promise<
  * if (!auth.success) return { error: auth.error };
  */
 export async function requireRole(
-    role: UserRole
+  role: UserRole,
 ): Promise<AuthResult<AuthenticatedProfile>> {
-    const authResult = await requireAuth();
+  const authResult = await requireAuth();
 
-    if (!authResult.success) {
-        return authResult;
-    }
-
-    if (authResult.data.profile.role !== role) {
-        return {
-            success: false,
-            error: `Unauthorized — ${role.charAt(0).toUpperCase() + role.slice(1)} access required`,
-        };
-    }
-
+  if (!authResult.success) {
     return authResult;
+  }
+
+  if (authResult.data.profile.role !== role) {
+    return {
+      success: false,
+      error: `Unauthorized — ${role.charAt(0).toUpperCase() + role.slice(1)} access required`,
+    };
+  }
+
+  return authResult;
 }

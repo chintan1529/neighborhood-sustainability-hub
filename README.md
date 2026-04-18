@@ -24,6 +24,7 @@ The **Neighborhood Sustainability Hub (NHS)** is a full-stack smart city applica
 ## ✨ Features
 
 ### 👤 Resident Portal
+
 - 📸 **AI Waste Reporter** — Upload a photo; an AI model auto-classifies the waste category
 - 🗺️ **Interactive Map** — Pin waste locations with Leaflet geolocation
 - 🏆 **Gamification** — Earn points, badges, and streaks for reports
@@ -32,12 +33,14 @@ The **Neighborhood Sustainability Hub (NHS)** is a full-stack smart city applica
 - 🛒 **Marketplace** — List and trade recyclable materials
 
 ### 🚛 Collector Portal
+
 - 🔄 **AI Route Optimizer** — TSP-based optimal pickup route generation
 - 📍 **Live Job Queue** — Priority-ranked pickup assignments
 - 🗺️ **Collector Map** — Real-time cluster map of pending reports
 - ⭐ **Ratings System** — Community feedback loop for collectors
 
 ### 🛡️ Admin Dashboard
+
 - 📈 **Analytics Charts** — KPI cards, leaderboards, SLA compliance tracking
 - 🔥 **Risk Intelligence Map** — Heatmap of high-risk waste zones (real-time via Supabase Realtime)
 - 🤖 **Predictive Engine** — Geohash clustering + adaptive weight optimizer for hotspot prediction
@@ -49,20 +52,20 @@ The **Neighborhood Sustainability Hub (NHS)** is a full-stack smart city applica
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | Next.js 14 (App Router) |
-| **Language** | TypeScript 5 |
-| **Database** | Supabase (PostgreSQL) |
-| **Auth** | Supabase Auth (Row Level Security) |
-| **Storage** | Supabase Storage |
-| **Realtime** | Supabase Realtime subscriptions |
-| **Maps** | Leaflet + react-leaflet |
-| **AI / ML** | Hugging Face Inference API |
-| **Charts** | Recharts |
-| **Styling** | TailwindCSS + shadcn/ui |
-| **Validation** | Zod + React Hook Form |
-| **Animations** | Framer Motion |
+| Layer          | Technology                         |
+| -------------- | ---------------------------------- |
+| **Framework**  | Next.js 14 (App Router)            |
+| **Language**   | TypeScript 5                       |
+| **Database**   | Supabase (PostgreSQL)              |
+| **Auth**       | Supabase Auth (Row Level Security) |
+| **Storage**    | Supabase Storage                   |
+| **Realtime**   | Supabase Realtime subscriptions    |
+| **Maps**       | Leaflet + react-leaflet            |
+| **AI / ML**    | Hugging Face Inference API         |
+| **Charts**     | Recharts                           |
+| **Styling**    | TailwindCSS + shadcn/ui            |
+| **Validation** | Zod + React Hook Form              |
+| **Animations** | Framer Motion                      |
 
 ---
 
@@ -161,13 +164,14 @@ main          ← stable, production-ready code
         └── feature/*   ← individual feature branches
 ```
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production-stable. Only merge from `dev` after testing. |
-| `dev` | Active development integration branch. |
-| `feature/*` | Short-lived branches for individual features. |
+| Branch      | Purpose                                                 |
+| ----------- | ------------------------------------------------------- |
+| `main`      | Production-stable. Only merge from `dev` after testing. |
+| `dev`       | Active development integration branch.                  |
+| `feature/*` | Short-lived branches for individual features.           |
 
 **Commit convention:**
+
 ```
 feat:     New feature
 fix:      Bug fix
