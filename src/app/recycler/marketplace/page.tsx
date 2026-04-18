@@ -5,6 +5,8 @@ import { ShieldAlert, Clock } from "lucide-react";
 import RecyclerView from "./recycler-view";
 import OnboardingWizard from "./onboarding-wizard";
 
+export const dynamic = "force-dynamic";
+
 export default async function RecyclerMarketplacePage() {
   const supabase = await createClient();
   const {

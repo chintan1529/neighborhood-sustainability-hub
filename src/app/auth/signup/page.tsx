@@ -1,173 +1,116 @@
-"use client";
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import { User, Truck, Store, ArrowRight, ChevronRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { signup } from "@/app/auth/actions";
+export default async function SignupSelectorPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-const formSchema = z
-  .object({
-    fullName: z
-      .string()
-      .min(2, { message: "Name must be at least 2 characters" }),
-    email: z.string().email({ message: "Please enter a valid email address" }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+  // If already logged in, redirect to respective dashboard
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
 
-export default function SignupPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("fullName", values.fullName);
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-
-      const result = await signup(formData);
-
-      if (result?.error) {
-        toast({
-          variant: "destructive",
-          title: "Signup failed",
-          description: result.error,
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Account created successfully",
-        });
-        // Redirect handled by server action
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
+    if (profile) {
+      if (profile.role === "admin") redirect("/admin");
+      if (profile.role === "collector") redirect("/collector");
+      if (profile.role === "recycler") redirect("/recycler");
+      redirect("/resident");
     }
   }
 
   return (
-    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Create an account
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your email below to create your account
-        </p>
-      </div>
+    <div className="w-full flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="w-full max-w-md mx-auto space-y-8">
+        
+        {/* Header */}
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Join the Hub
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Choose your account type to continue
+          </p>
+        </div>
 
-      <div className="grid gap-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
-            </Button>
-          </form>
-        </Form>
-      </div>
+        {/* Cards Stack */}
+        <div className="flex flex-col gap-4">
+          
+          {/* Resident Card */}
+          <Link href="/auth/signup/resident" className="group outline-none w-full">
+            <Card className="relative overflow-hidden bg-white dark:bg-slate-900/50 shadow-sm hover:shadow-md transition-all duration-300 border-2 border-slate-100 dark:border-slate-800 hover:border-emerald-500 group-focus-visible:ring-2 group-focus-visible:ring-emerald-500 rounded-xl cursor-pointer">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="w-12 h-12 flex-shrink-0 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <User className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold">Resident</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-0.5">
+                    Report waste, earn rewards & sell recyclables
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
+              </CardContent>
+            </Card>
+          </Link>
 
-      <p className="px-8 text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link
-          href="/auth/login"
-          className="underline underline-offset-4 hover:text-primary"
-        >
-          Login
-        </Link>
-      </p>
+          {/* Collector Card */}
+          <Link href="/auth/signup/collector" className="group outline-none w-full">
+            <Card className="relative overflow-hidden bg-white dark:bg-slate-900/50 shadow-sm hover:shadow-md transition-all duration-300 border-2 border-slate-100 dark:border-slate-800 hover:border-blue-500 group-focus-visible:ring-2 group-focus-visible:ring-blue-500 rounded-xl cursor-pointer">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="w-12 h-12 flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Truck className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold">Collector</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-0.5">
+                    Manage cleanup jobs & optimize routes
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Recycler Card */}
+          <Link href="/auth/signup/recycler" className="group outline-none w-full">
+            <Card className="relative overflow-hidden bg-white dark:bg-slate-900/50 shadow-sm hover:shadow-md transition-all duration-300 border-2 border-slate-100 dark:border-slate-800 hover:border-teal-500 group-focus-visible:ring-2 group-focus-visible:ring-teal-500 rounded-xl cursor-pointer">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="w-12 h-12 flex-shrink-0 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Store className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold">Recycler</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-0.5">
+                    Buy market materials & schedule pickups
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-teal-500 group-hover:translate-x-1 transition-all" />
+              </CardContent>
+            </Card>
+          </Link>
+
+        </div>
+
+        {/* Footer actions */}
+        <div className="text-center pt-2">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Already have an account?{" "}
+            <Link
+              href="/auth/login"
+              className="font-semibold text-slate-900 dark:text-white hover:underline underline-offset-4"
+            >
+              Log in
+            </Link>
+          </p>
+        </div>
+
+      </div>
     </div>
   );
 }

@@ -126,12 +126,16 @@ export async function makeOffer(
 
   if (!user) return { success: false, error: "Unauthorized" };
 
+  console.log("[makeOffer] Starting for user:", user.id, "listing:", listingId);
+
   try {
     const { data: profile } = await (supabase as any)
       .from("recycler_profiles")
       .select("verification_status")
       .eq("id", user.id)
       .single();
+
+    console.log("[makeOffer] Recycler profile:", profile);
 
     if (!profile || (profile as any).verification_status !== "approved") {
       throw new Error("You must be a verified recycler to make an offer.");
@@ -142,14 +146,22 @@ export async function makeOffer(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    const { error } = await adminSupabase.from("marketplace_offers").insert({
+    const insertPayload = {
       listing_id: listingId,
       recycler_id: user.id,
       price_offered: priceOffered,
       proposed_pickup_time: proposedPickupTime,
       status: "pending",
       message: null,
-    });
+    };
+    console.log("[makeOffer] Inserting:", insertPayload);
+
+    const { data, error } = await adminSupabase
+      .from("marketplace_offers")
+      .insert(insertPayload)
+      .select();
+
+    console.log("[makeOffer] Insert result — data:", data, "error:", error);
 
     if (error) throw error;
 
@@ -157,7 +169,7 @@ export async function makeOffer(
     revalidatePath("/recycler/offers");
     return { success: true };
   } catch (error: any) {
-    console.error("Failed to make offer:", error);
+    console.error("[makeOffer] FAILED:", error);
     return { success: false, error: error.message };
   }
 }

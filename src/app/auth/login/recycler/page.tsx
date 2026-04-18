@@ -21,8 +21,11 @@ export default function RecyclerLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  async function handleSubmit(formData: FormData) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
+    
+    const formData = new FormData(e.currentTarget);
     try {
       const result = await login(formData);
       if (result?.error) {
@@ -31,10 +34,16 @@ export default function RecyclerLoginPage() {
           description: result.error,
           variant: "destructive",
         });
+        setIsLoading(false);
+      } else if (result?.success && result?.redirectUrl) {
+        window.location.href = result.redirectUrl;
       }
-    } catch {
-      // redirect throws, this is expected
-    } finally {
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
       setIsLoading(false);
     }
   }
@@ -59,7 +68,7 @@ export default function RecyclerLoginPage() {
               Enter your credentials to access the marketplace
             </CardDescription>
           </CardHeader>
-          <form action={handleSubmit}>
+          <form onSubmit={onSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>

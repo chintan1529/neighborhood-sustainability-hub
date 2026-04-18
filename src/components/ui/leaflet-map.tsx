@@ -17,14 +17,14 @@ import L from "leaflet";
 import "leaflet.markercluster";
 import { Badge } from "@/components/ui/badge";
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+const defaultIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 });
 
 interface MapMarker {
@@ -90,7 +90,7 @@ function LocationMarker({
     }
   }, [position, map]);
 
-  return position ? <Marker position={position} /> : null;
+  return position ? <Marker position={position} icon={defaultIcon} /> : null;
 }
 
 function ClusteredMarkers({ markers = [] }: { markers?: MapMarker[] }) {
@@ -99,7 +99,7 @@ function ClusteredMarkers({ markers = [] }: { markers?: MapMarker[] }) {
   useEffect(() => {
     const clusterGroup = (L as any).markerClusterGroup();
     markers.forEach((marker) => {
-      const leafletMarker = L.marker([marker.latitude, marker.longitude]);
+      const leafletMarker = L.marker([marker.latitude, marker.longitude], { icon: defaultIcon });
       leafletMarker.bindPopup(`
                 <div style="min-width:160px">
                     <strong>${marker.label}</strong><br/>
@@ -186,6 +186,7 @@ export default function LeafletMap({
               <Marker
                 key={marker.id}
                 position={[marker.latitude, marker.longitude]}
+                icon={defaultIcon}
               >
                 <Popup>
                   <div className="p-1">

@@ -52,7 +52,7 @@ export async function login(formData: FormData) {
           : "/resident";
 
   revalidatePath("/", "layout");
-  redirect(redirectPath);
+  return { success: true, redirectUrl: redirectPath };
 }
 
 export async function signup(formData: FormData) {
@@ -82,7 +82,12 @@ export async function signup(formData: FormData) {
     options: {
       data: {
         full_name: typeof fullName === "string" ? fullName : undefined,
-        role: role === "recycler" ? "recycler" : undefined,
+        role:
+          role === "recycler"
+            ? "recycler"
+            : role === "collector"
+              ? "collector"
+              : "resident",
       },
     },
   });
@@ -91,9 +96,14 @@ export async function signup(formData: FormData) {
     return { error: error.message };
   }
 
-  const redirectPath = role === "recycler" ? "/recycler" : "/resident";
+  const redirectPath =
+    role === "recycler"
+      ? "/recycler"
+      : role === "collector"
+        ? "/collector"
+        : "/resident";
   revalidatePath("/", "layout");
-  redirect(redirectPath);
+  return { success: true, redirectUrl: redirectPath };
 }
 
 export async function signout() {

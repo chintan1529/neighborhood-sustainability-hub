@@ -72,8 +72,8 @@ export default function AuthLayout({
       </div>
 
       {/* Right Panel — Form */}
-      <div className="lg:p-8 flex items-center justify-center">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[380px] p-6">
+      <div className="lg:p-8 flex items-center justify-center p-6 lg:ml-auto w-full max-w-2xl bg-white dark:bg-slate-950/50">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6">
           {children}
         </div>
       </div>

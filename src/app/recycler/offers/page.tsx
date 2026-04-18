@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { Store, Tag, Clock, Calendar, Navigation } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function RecyclerOffersPage() {
   const supabase = await createClient();
   const {
@@ -19,7 +21,8 @@ export default async function RecyclerOffersPage() {
 
   if (!user) redirect("/auth/login/recycler");
 
-  // Verify Recycler
+  // Verify Recycler — but don't redirect if no recycler_profiles row;
+  // only redirect if explicitly not approved
   const { data: profile } = await (supabase as any)
     .from("recycler_profiles")
     .select("verification_status")
@@ -35,7 +38,7 @@ export default async function RecyclerOffersPage() {
     .select(
       `
             *,
-            listing:marketplace_listings (
+            listing:marketplace_listings!marketplace_offers_listing_id_fkey (
                 id,
                 title,
                 category,
@@ -52,6 +55,7 @@ export default async function RecyclerOffersPage() {
   if (error) {
     console.error("Error fetching offers:", error);
   }
+  console.log("[RecyclerOffersPage] User:", user.id, "| Offers found:", offers?.length ?? 0);
 
   const getStatusColor = (status: string) => {
     switch (status) {

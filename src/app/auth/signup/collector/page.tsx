@@ -18,24 +18,35 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { login } from "@/app/auth/actions";
+import { signup } from "@/app/auth/actions";
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
-});
+const formSchema = z
+  .object({
+    fullName: z
+      .string()
+      .min(2, { message: "Name must be at least 2 characters" }),
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-export default function LoginPage() {
+export default function CollectorSignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -44,22 +55,24 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData();
+      formData.append("fullName", values.fullName);
       formData.append("email", values.email);
       formData.append("password", values.password);
+      formData.append("role", "collector");
 
-      const result = await login(formData);
+      const result = await signup(formData);
 
       if (result?.error) {
         toast({
           variant: "destructive",
-          title: "Login failed",
+          title: "Signup failed",
           description: result.error,
         });
         setIsLoading(false);
       } else if (result?.success && result?.redirectUrl) {
         toast({
           title: "Success",
-          description: "Logged in successfully",
+          description: "Collector account created successfully",
         });
         window.location.href = result.redirectUrl;
       }
@@ -76,9 +89,12 @@ export default function LoginPage() {
   return (
     <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Create Collector Account
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your credentials to sign in to your account
+          Enter your email below to start claiming and completing waste
+          collection jobs
         </p>
       </div>
 
@@ -87,12 +103,25 @@ export default function LoginPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name / Business Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder="collector@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,40 +140,44 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="******" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading}
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
+              Create Collector Account
             </Button>
           </form>
         </Form>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-6">
-          {/* Placeholder for social login buttons if needed */}
-          <Button variant="outline" disabled>
-            Github
-          </Button>
-          <Button variant="outline" disabled>
-            Google
-          </Button>
-        </div>
       </div>
 
       <p className="px-8 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        Already have an account?{" "}
         <Link
-          href="/auth/signup"
+          href="/auth/login"
           className="underline underline-offset-4 hover:text-primary"
         >
-          Sign up
+          Login
+        </Link>
+      </p>
+
+      <p className="px-8 text-center text-sm text-muted-foreground mt-4">
+        <Link href="/auth/signup" className="underline underline-offset-4">
+          Sign up as a different role
         </Link>
       </p>
     </div>
