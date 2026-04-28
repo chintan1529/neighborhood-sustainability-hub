@@ -30,14 +30,24 @@ const CATEGORY_ALIASES: Record<string, WasteCategory> = {
   other: "mixed",
 };
 
-// ─── Gemini model fallback list (2026-stable) ───
+// ─── Gemini model fallback list ───
 // Each model has its own separate per-model daily quota on the free tier.
-// By listing multiple models, we can tap into different quota buckets.
+// By listing multiple models, we maximise available quota buckets.
+// Order: fastest/cheapest first, heavier models as last resort.
 const GEMINI_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
   "gemini-2.0-flash-lite",
+  "gemini-2.0-flash-lite-001",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-001",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-pro",
 ];
+
+// Per-model request timeout in milliseconds
+const MODEL_TIMEOUT_MS = 8_000;
+// Max retries per model on transient (503/429) errors
+const MAX_RETRIES_PER_MODEL = 3;
 
 // ─── Expert system prompt ───
 const SYSTEM_PROMPT = `You are an expert waste classification AI developed for a municipal waste management system.
@@ -76,6 +86,27 @@ function detectMimeType(base64: string): string {
   if (header.startsWith("R0lGOD")) return "image/gif";
   if (header.startsWith("UklGR")) return "image/webp";
   return "image/jpeg"; // default fallback
+}
+
+/** Classify an error message into an actionable bucket */
+function classifyError(msg: string): "rate_limit" | "overloaded" | "not_found" | "unknown" {
+  if (msg.includes("404") || msg.includes("not found") || msg.includes("not supported")) return "not_found";
+  if (msg.includes("429") || msg.includes("Too Many Requests") || msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED")) return "rate_limit";
+  if (msg.includes("503") || msg.includes("Service Unavailable") || msg.includes("high demand") || msg.includes("overloaded") || msg.includes("UNAVAILABLE")) return "overloaded";
+  return "unknown";
+}
+
+/** Run a promise with an AbortController‑style timeout */
+async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timeout: ${label} exceeded ${ms}ms`)), ms);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer!);
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -144,7 +175,7 @@ export async function POST(request: NextRequest) {
     console.log(`=== Gemini Waste Classification ===`);
     console.log(`Image size: ${testBuffer.length} bytes, MIME: ${mimeType}`);
 
-    // ─── Try Gemini models with fallback ───
+    // ─── Try Gemini models with aggressive fallback ───
     const genAI = new GoogleGenerativeAI(geminiKey);
     let geminiResult: {
       category: WasteCategory;
@@ -154,8 +185,8 @@ export async function POST(request: NextRequest) {
     let usedModel = "";
 
     for (const modelName of GEMINI_MODELS) {
-      // Attempt each model up to 2 times (retry once on rate-limit)
-      for (let attempt = 0; attempt < 2; attempt++) {
+      // Attempt each model up to MAX_RETRIES_PER_MODEL times on transient errors
+      for (let attempt = 0; attempt < MAX_RETRIES_PER_MODEL; attempt++) {
         try {
           console.log(
             `  → Trying model: ${modelName} (attempt ${attempt + 1})`,
@@ -163,15 +194,19 @@ export async function POST(request: NextRequest) {
 
           const model = genAI.getGenerativeModel({ model: modelName });
 
-          const result = await model.generateContent([
-            { text: SYSTEM_PROMPT },
-            {
-              inlineData: {
-                mimeType,
-                data: imageBase64,
+          const result = await withTimeout(
+            model.generateContent([
+              { text: SYSTEM_PROMPT },
+              {
+                inlineData: {
+                  mimeType,
+                  data: imageBase64,
+                },
               },
-            },
-          ]);
+            ]),
+            MODEL_TIMEOUT_MS,
+            modelName,
+          );
 
           const response = result.response;
           const text = response.text().trim();
@@ -204,37 +239,35 @@ export async function POST(request: NextRequest) {
               };
               usedModel = modelName;
               console.log(
-                `  ✓ Classification: ${geminiResult.category} (${Math.round(geminiResult.confidence * 100)}%)`,
+                `  ✓ Classification: ${geminiResult.category} (${Math.round(geminiResult.confidence * 100)}%) via ${modelName}`,
               );
               break;
             }
           }
 
           console.warn(`  ✗ Invalid response structure from ${modelName}`);
-          break; // Don't retry on bad response structure
+          break; // Don't retry on bad response structure — move to next model
         } catch (modelError: any) {
           const msg = modelError.message || "";
-          const isRateLimit =
-            msg.includes("429") ||
-            msg.includes("Too Many Requests") ||
-            msg.includes("quota");
-          const isNotFound = msg.includes("404") || msg.includes("not found");
+          const errorType = classifyError(msg);
 
-          if (isNotFound) {
+          if (errorType === "not_found") {
             console.warn(`  ✗ Model ${modelName} not found — skipping`);
             break; // No point retrying a 404
           }
 
-          if (isRateLimit && attempt === 0) {
+          if ((errorType === "rate_limit" || errorType === "overloaded") && attempt < MAX_RETRIES_PER_MODEL - 1) {
+            // Exponential backoff: 1s, 2s, 4s
+            const waitMs = 1000 * 2 ** attempt;
             console.warn(
-              `  ⏳ Rate-limited on ${modelName}, waiting 5s before retry...`,
+              `  ⏳ ${errorType === "rate_limit" ? "Rate-limited" : "503 overloaded"} on ${modelName}, retrying in ${waitMs}ms...`,
             );
-            await new Promise((r) => setTimeout(r, 5000));
-            continue; // Retry same model once
+            await new Promise((r) => setTimeout(r, waitMs));
+            continue; // Retry same model
           }
 
           console.warn(
-            `  ✗ Model ${modelName} failed: ${msg.substring(0, 120)}`,
+            `  ✗ Model ${modelName} failed (${errorType}): ${msg.substring(0, 120)}`,
           );
           break; // Move to next model
         }

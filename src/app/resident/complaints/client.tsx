@@ -140,7 +140,7 @@ export function ComplaintsClient({ complaints }: { complaints: Complaint[] }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
+          <h2 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg">
               <MessageSquareWarning className="h-5 w-5 text-white" />
             </div>
@@ -165,7 +165,7 @@ export function ComplaintsClient({ complaints }: { complaints: Complaint[] }) {
           <CardHeader>
             <CardTitle className="text-lg">Submit a Complaint</CardTitle>
             <CardDescription>
-              Describe your issue and we'll address it as soon as possible
+              Describe your issue and we&apos;ll address it as soon as possible
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -216,7 +216,7 @@ export default async function IntelligenceDashboardPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
+          <h2 className="text-3xl font-semibold tracking-tight flex items-center gap-2">
             Waste Intelligence
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-[10px] font-medium">
               <Sparkles className="h-3 w-3" /> Analytics

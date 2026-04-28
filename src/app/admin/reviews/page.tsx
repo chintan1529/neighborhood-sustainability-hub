@@ -55,7 +55,7 @@ export default async function AdminReviewsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight">
+          <h2 className="text-3xl font-semibold tracking-tight">
             Collector Reviews
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -115,7 +115,7 @@ export default async function AdminReviewsPage() {
                         <div className="flex items-start gap-2">
                           <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                           <span className="text-sm italic text-muted-foreground line-clamp-2">
-                            "{review.collector_review}"
+                            &quot;{review.collector_review}&quot;
                           </span>
                         </div>
                       ) : (

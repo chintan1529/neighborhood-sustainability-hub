@@ -74,15 +74,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[360px]">
+      <div className="flex flex-col space-y-1.5 text-center">
+        <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
-          Enter your credentials to sign in to your account
+          Enter your credentials to sign in
         </p>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-5">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -90,7 +90,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-sm">Email</FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
                   </FormControl>
@@ -103,9 +103,9 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-sm">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
+                    <Input type="password" placeholder="••••••" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,32 +117,13 @@ export default function LoginPage() {
             </Button>
           </form>
         </Form>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-6">
-          {/* Placeholder for social login buttons if needed */}
-          <Button variant="outline" disabled>
-            Github
-          </Button>
-          <Button variant="outline" disabled>
-            Google
-          </Button>
-        </div>
       </div>
 
-      <p className="px-8 text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
           href="/auth/signup"
-          className="underline underline-offset-4 hover:text-primary"
+          className="font-medium text-foreground hover:underline underline-offset-4"
         >
           Sign up
         </Link>

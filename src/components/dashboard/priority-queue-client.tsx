@@ -110,10 +110,9 @@ export default function PriorityQueueClient() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
-            <Zap className="h-7 w-7 text-amber-500" />
+          <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-3">
             Priority Queue
-          </h2>
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             AI-scored waste reports ranked by urgency
           </p>
@@ -163,21 +162,17 @@ export default function PriorityQueueClient() {
             color: "from-emerald-500 to-emerald-600",
             icon: Timer,
           },
-        ].map(({ label, count, color, icon: Icon }) => (
-          <Card key={label} className="border border-border/50 overflow-hidden">
-            <CardContent className="pt-4 pb-3 px-4">
+        ].map(({ label, count, icon: Icon }) => (
+          <Card key={label}>
+            <CardContent className="pt-5 pb-3 px-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground">
                     {label}
                   </p>
-                  <p className="text-2xl font-extrabold mt-0.5">{count}</p>
+                  <p className="text-2xl font-semibold mt-0.5 tabular-nums">{count}</p>
                 </div>
-                <div
-                  className={`w-9 h-9 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center`}
-                >
-                  <Icon className="h-4 w-4 text-white" />
-                </div>
+                <Icon className="h-4 w-4 text-muted-foreground/60" />
               </div>
             </CardContent>
           </Card>
@@ -329,7 +324,7 @@ export default function PriorityQueueClient() {
 
                         {/* Expanded: breakdown + reasons */}
                         {isExpanded && (
-                          <div className="mt-3 pt-3 border-t border-border/50 space-y-2 animate-slide-up">
+                          <div className="mt-3 pt-3 border-t border-border space-y-2">
                             <div className="grid grid-cols-5 gap-2">
                               {[
                                 {

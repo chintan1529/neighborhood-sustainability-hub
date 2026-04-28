@@ -105,33 +105,21 @@ export function ImpactDashboard({
       label: "Waste Diverted",
       value: `${totalWeightKg.toFixed(1)} kg`,
       icon: Recycle,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50 dark:bg-emerald-950/40",
-      accent: "border-l-emerald-500",
     },
     {
       label: "CO₂ Saved",
       value: `${co2SavedKg.toFixed(1)} kg`,
       icon: Wind,
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-950/40",
-      accent: "border-l-blue-500",
     },
     {
       label: "Trees Equivalent",
       value: treesEquivalent.toFixed(1),
       icon: TreePine,
-      color: "text-green-600",
-      bg: "bg-green-50 dark:bg-green-950/40",
-      accent: "border-l-green-500",
     },
     {
       label: "Water Saved",
       value: `${waterSavedL.toFixed(0)} L`,
       icon: Droplets,
-      color: "text-cyan-600",
-      bg: "bg-cyan-50 dark:bg-cyan-950/40",
-      accent: "border-l-cyan-500",
     },
   ];
 
@@ -139,26 +127,18 @@ export function ImpactDashboard({
     <div className="space-y-6">
       {/* Impact Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {impactStats.map((stat, i) => {
+        {impactStats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card
-              key={stat.label}
-              className={`border-l-4 ${stat.accent} shadow-subtle hover:shadow-soft transition-all duration-300 hover:-translate-y-0.5 animate-fadeIn`}
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.label}
-                </CardTitle>
-                <div
-                  className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center`}
-                >
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
+            <Card key={stat.label}>
+              <CardContent className="pt-5">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {stat.label}
+                  </p>
+                  <Icon className="h-4 w-4 text-muted-foreground/60" />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold tracking-tight">
+                <div className="text-2xl font-semibold tracking-tight tabular-nums">
                   {stat.value}
                 </div>
               </CardContent>
@@ -169,10 +149,10 @@ export function ImpactDashboard({
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Category Breakdown — Donut Chart */}
-        <Card className="shadow-subtle hover:shadow-soft transition-all duration-300">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Recycle className="h-4 w-4 text-emerald-600" />
+            <CardTitle className="flex items-center gap-2">
+              <Recycle className="h-4 w-4 text-muted-foreground" />
               Waste Categories
             </CardTitle>
           </CardHeader>
@@ -180,14 +160,14 @@ export function ImpactDashboard({
             <div className="flex items-center gap-6">
               {/* Donut chart */}
               <div
-                className="w-32 h-32 rounded-full flex-shrink-0 relative"
+                className="w-28 h-28 rounded-full flex-shrink-0 relative"
                 style={{
                   background: `conic-gradient(${conicGradient})`,
                 }}
               >
                 <div className="absolute inset-3 rounded-full bg-card flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-lg font-bold">
+                    <div className="text-lg font-semibold tabular-nums">
                       {totalCategoryReports}
                     </div>
                     <div className="text-[10px] text-muted-foreground">
@@ -206,17 +186,17 @@ export function ImpactDashboard({
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-2.5 h-2.5 rounded-full"
+                        className="w-2 h-2 rounded-full"
                         style={{
                           backgroundColor:
                             CATEGORY_COLORS[cat.category] || "#6B7280",
                         }}
                       />
-                      <span className="capitalize text-muted-foreground">
+                      <span className="capitalize text-muted-foreground text-xs">
                         {cat.category}
                       </span>
                     </div>
-                    <span className="font-medium">{cat.count}</span>
+                    <span className="font-medium text-xs tabular-nums">{cat.count}</span>
                   </div>
                 ))}
               </div>
@@ -225,10 +205,10 @@ export function ImpactDashboard({
         </Card>
 
         {/* Monthly Activity Chart */}
-        <Card className="shadow-subtle hover:shadow-soft transition-all duration-300">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
               Monthly Activity
             </CardTitle>
           </CardHeader>
@@ -241,11 +221,11 @@ export function ImpactDashboard({
                     key={month.month}
                     className="flex-1 flex flex-col items-center gap-1"
                   >
-                    <span className="text-[10px] font-medium text-muted-foreground">
+                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
                       {month.count}
                     </span>
                     <div
-                      className="w-full rounded-t-md bg-emerald-500/80 hover:bg-emerald-500 transition-colors duration-300 min-h-[4px]"
+                      className="w-full rounded-t bg-foreground/15 hover:bg-foreground/25 transition-colors duration-150 min-h-[4px]"
                       style={{ height: `${Math.max(height, 4)}%` }}
                     />
                     <span className="text-[10px] text-muted-foreground">
@@ -261,10 +241,10 @@ export function ImpactDashboard({
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Milestone Progress */}
-        <Card className="shadow-subtle hover:shadow-soft transition-all duration-300">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Target className="h-4 w-4 text-amber-600" />
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-muted-foreground" />
               Milestone Progress
             </CardTitle>
           </CardHeader>
@@ -287,14 +267,14 @@ export function ImpactDashboard({
                         {milestone.label}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground tabular-nums">
                       {totalReports}/{milestone.target}
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        achieved ? "bg-emerald-500" : "bg-amber-500"
+                        achieved ? "bg-emerald-500" : "bg-foreground/20"
                       }`}
                       style={{ width: `${progress}%` }}
                     />
@@ -306,10 +286,10 @@ export function ImpactDashboard({
         </Card>
 
         {/* SDG Contribution */}
-        <Card className="shadow-subtle hover:shadow-soft transition-all duration-300">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Leaf className="h-4 w-4 text-green-600" />
+            <CardTitle className="flex items-center gap-2">
+              <Leaf className="h-4 w-4 text-muted-foreground" />
               SDG Contribution
             </CardTitle>
           </CardHeader>
@@ -324,13 +304,13 @@ export function ImpactDashboard({
                     Reduce environmental impact of cities
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-semibold">
                   11
                 </div>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-amber-500 transition-all duration-500"
+                  className="h-full rounded-full bg-foreground/20 transition-all duration-500"
                   style={{ width: `${Math.min(totalReports * 2, 100)}%` }}
                 />
               </div>
@@ -343,27 +323,27 @@ export function ImpactDashboard({
                     SDG 12.5 — Responsible Consumption
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Reduce waste through recycling & reuse
+                    Reduce waste through recycling &amp; reuse
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-orange-600 text-white flex items-center justify-center text-xs font-bold">
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-xs font-semibold">
                   12
                 </div>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-orange-600 transition-all duration-500"
+                  className="h-full rounded-full bg-foreground/20 transition-all duration-500"
                   style={{ width: `${Math.min(totalWeightKg * 3, 100)}%` }}
                 />
               </div>
             </div>
 
-            <div className="pt-2 border-t">
+            <div className="pt-2 border-t border-border">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Your Impact Score</span>
                 <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-amber-500" />
-                  <span className="font-bold text-lg">
+                  <Award className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-semibold text-lg tabular-nums">
                     {Math.round(
                       totalPoints * 0.1 + totalReports * 5 + currentStreak * 2,
                     )}

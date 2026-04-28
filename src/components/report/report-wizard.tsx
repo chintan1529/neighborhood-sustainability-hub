@@ -102,60 +102,61 @@ export function ReportWizard() {
     setIsClassifying(true);
     try {
       const compressedBlob = await compressImage(file, 800);
-      const reader = new FileReader();
 
-      reader.onloadend = async () => {
-        const base64data = (reader.result as string).split(",")[1];
+      const base64data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = (reader.result as string).split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(compressedBlob);
+      });
 
-        // Call our Next.js API route for classification
-        const response = await fetch("/api/classify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: base64data }),
+      // Call our Next.js API route for classification
+      const response = await fetch("/api/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64data }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Classification request failed");
+      }
+
+      if (!data.ai_available || !data.predicted_class) {
+        toast({
+          title: "AI Service Unavailable",
+          description:
+            data.message || "Please select the waste category manually.",
         });
+      } else if (data.predicted_class) {
+        // Edge Function returns { predicted_class, confidence, ai_available }
+        const category = data.predicted_class;
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.message || "Classification request failed");
-        }
-
-        if (!data.ai_available || !data.predicted_class) {
+        if (
+          WASTE_CATEGORIES[
+          category as import("@/types/database").WasteCategory
+          ]
+        ) {
+          form.setValue("category", category);
+          setConfidence(data.confidence);
           toast({
-            title: "AI Service Unavailable",
-            description:
-              data.message || "Please select the waste category manually.",
+            title: "AI Classified!",
+            description: `Identified as ${WASTE_CATEGORIES[category as import("@/types/database").WasteCategory].label} (${Math.round(data.confidence * 100)}% confidence)`,
           });
-        } else if (data.predicted_class) {
-          // Edge Function returns { predicted_class, confidence, ai_available }
-          const category = data.predicted_class;
-
-          if (
-            WASTE_CATEGORIES[
-              category as import("@/types/database").WasteCategory
-            ]
-          ) {
-            form.setValue("category", category);
-            setConfidence(data.confidence);
-            toast({
-              title: "AI Classified!",
-              description: `Identified as ${WASTE_CATEGORIES[category as import("@/types/database").WasteCategory].label} (${Math.round(data.confidence * 100)}% confidence)`,
-            });
-          } else {
-            // Fallback if category not in our list
-            form.setValue("category", "mixed");
-            toast({
-              title: "AI Classified",
-              description: `Detected: ${category}. Please verify or select correctly.`,
-            });
-          }
+        } else {
+          // Fallback if category not in our list
+          form.setValue("category", "mixed");
+          toast({
+            title: "AI Classified",
+            description: `Detected: ${category}. Please verify or select correctly.`,
+          });
         }
-        setIsClassifying(false);
-      };
-
-      reader.readAsDataURL(compressedBlob);
+      }
     } catch (e) {
       console.error(e);
-      setIsClassifying(false);
       toast({
         title: "Classification Error",
         description:
@@ -163,6 +164,8 @@ export function ReportWizard() {
             ? e.message
             : "Please select the waste category manually.",
       });
+    } finally {
+      setIsClassifying(false);
     }
   };
   // Step 3: Geolocation
@@ -265,11 +268,10 @@ export function ReportWizard() {
         {steps.map((label, idx) => (
           <div key={label} className="flex flex-col items-center">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                step >= idx
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step >= idx
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground"
-              }`}
+                }`}
             >
               {step > idx ? <CheckCircle2 className="h-4 w-4" /> : idx + 1}
             </div>
@@ -330,14 +332,47 @@ export function ReportWizard() {
               {step === 1 && (
                 <div className="space-y-6">
                   {isClassifying ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                      <p className="text-lg font-medium">
-                        Analyzing waste with AI...
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Identifying material type
-                      </p>
+                    <div className="flex flex-col items-center justify-center py-8 space-y-6">
+                      <style>{`
+                        @keyframes scan {
+                          0%, 100% { top: 0%; opacity: 0; }
+                          10%, 90% { opacity: 1; }
+                          50% { top: 100%; }
+                        }
+                      `}</style>
+                      <div className="relative w-56 h-56 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-2xl">
+                        {photoPreview ? (
+                          <Image
+                            src={photoPreview}
+                            alt="Scanning"
+                            fill
+                            className="object-cover opacity-80"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <UploadCloud className="h-10 w-10 text-muted-foreground opacity-50" />
+                          </div>
+                        )}
+                        {/* Scanning Laser Animation */}
+                        <div
+                          className="absolute left-0 right-0 h-1 bg-primary shadow-[0_0_15px_3px_rgba(34,197,94,0.6)] z-10"
+                          style={{ animation: "scan 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
+                        />
+                        {/* Radar Pulse Overlay */}
+                        <div className="absolute inset-0 bg-primary/10 animate-pulse mix-blend-overlay" />
+                      </div>
+
+                      <div className="text-center space-y-3">
+                        <div className="flex items-center justify-center gap-3">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-500">
+                            Analyzing Waste
+                          </h3>
+                        </div>
+                        <p className="text-sm font-medium text-muted-foreground animate-pulse">
+                          Extracting material features &amp; identifying category...
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -506,12 +541,12 @@ export function ReportWizard() {
                     </div>
                     {form.getValues("notes") && (
                       <div className="text-sm bg-muted/50 p-3 rounded">
-                        "{form.getValues("notes")}"
+                        &quot;{form.getValues("notes")}&quot;
                       </div>
                     )}
                   </div>
 
-                  <div className="bg-nhs-green/10 p-4 rounded-lg flex items-center gap-3 text-nhs-green">
+                  <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg flex items-center gap-3 text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 className="h-5 w-5" />
                     <div className="text-sm">
                       <p className="font-medium">Ready to submit!</p>
@@ -543,7 +578,7 @@ export function ReportWizard() {
             <Button
               onClick={form.handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              className="bg-nhs-green hover:bg-nhs-green/90"
+
             >
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

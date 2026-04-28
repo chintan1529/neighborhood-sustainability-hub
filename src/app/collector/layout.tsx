@@ -22,7 +22,7 @@ export default async function CollectorLayout({
     .single();
 
   if (profile?.role !== "collector" && profile?.role !== "admin") {
-    redirect("/resident"); // Redirect unauthorized users
+    redirect("/resident");
   }
 
   const userData = {
@@ -32,15 +32,13 @@ export default async function CollectorLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      <div className="hidden border-r bg-muted/40 md:block md:w-64 lg:w-72">
-        <div className="flex h-full flex-col gap-2">
-          <Sidebar role="collector" className="flex-1" />
-        </div>
+    <div className="flex min-h-screen flex-col md:flex-row bg-background">
+      <div className="hidden border-r border-border bg-card md:block md:w-60 lg:w-64 shrink-0">
+        <Sidebar role="collector" className="h-screen sticky top-0" />
       </div>
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header role="collector" user={userData} />
-        <main className="flex-1 space-y-4 p-8 pt-6">{children}</main>
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   );

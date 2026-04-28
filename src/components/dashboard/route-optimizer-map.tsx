@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Route,
   Navigation,
@@ -12,13 +13,22 @@ import {
   MapPin,
   Loader2,
   ChevronRight,
-  Sparkles,
-  TrendingDown,
   ExternalLink,
   AlertTriangle,
   LocateFixed,
 } from "lucide-react";
 import { WASTE_CATEGORIES } from "@/lib/constants";
+
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Fix missing leafet marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
 // Dynamic Leaflet imports (no SSR)
 const MapContainer = dynamic(
@@ -95,6 +105,11 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
     null,
   );
   const [selectedStop, setSelectedStop] = useState<number | null>(null);
+  const [assignedOnly, setAssignedOnly] = useState(false);
+
+  const displayedReports = assignedOnly
+    ? reports.filter((r) => r.status === "assigned")
+    : reports;
 
   // Get collector's current location
   const getLocation = useCallback(() => {
@@ -128,7 +143,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
         body: JSON.stringify({
           collectorLat: startPos[0],
           collectorLng: startPos[1],
-          reports: reports.map((r) => ({
+          reports: displayedReports.map((r) => ({
             id: r.id,
             latitude: r.latitude,
             longitude: r.longitude,
@@ -152,7 +167,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [collectorPos, defaultCenter, reports]);
+  }, [collectorPos, defaultCenter, displayedReports]);
 
   // Build polyline coordinates
   const polylineCoords: [number, number][] = route
@@ -188,7 +203,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
   return (
     <div className="space-y-6">
       {/* ── Controls Bar ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <Button
           variant="outline"
           onClick={getLocation}
@@ -201,13 +216,13 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
 
         <Button
           onClick={optimizeRoute}
-          disabled={loading || reports.length === 0}
-          className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/25 border-0"
+          disabled={loading || displayedReports.length === 0}
+          className="gap-2"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <Sparkles className="h-4 w-4" />
+            <Route className="h-4 w-4" />
           )}
           {loading ? "AI Optimizing..." : "Generate Optimal Route"}
         </Button>
@@ -230,8 +245,22 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
           </Button>
         )}
 
-        <div className="ml-auto text-sm text-muted-foreground">
-          {reports.length} pickup{reports.length !== 1 ? "s" : ""} available
+        <div className="flex items-center gap-2 sm:ml-2 sm:border-l sm:pl-4 border-border/50">
+          <Switch
+            id="assigned-only"
+            checked={assignedOnly}
+            onCheckedChange={setAssignedOnly}
+          />
+          <label
+            htmlFor="assigned-only"
+            className="text-sm font-medium cursor-pointer"
+          >
+            Assigned Only
+          </label>
+        </div>
+
+        <div className="mt-2 sm:mt-0 sm:ml-auto text-sm text-muted-foreground whitespace-nowrap">
+          {displayedReports.length} pickup{displayedReports.length !== 1 ? "s" : ""} available
         </div>
       </div>
 
@@ -245,57 +274,37 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
 
       {/* ── Optimization Stats ── */}
       {route && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-slide-up">
-          <Card className="border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <CardContent className="pt-4 pb-3 px-4">
-              <div className="flex items-center gap-2 mb-1">
-                <MapPin className="h-4 w-4 text-emerald-600" />
-                <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                  Total Stops
-                </span>
-              </div>
-              <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">
-                {route.totalStops}
-              </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card>
+            <CardContent className="pt-5 pb-3 px-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Total Stops
+              </p>
+              <p className="text-2xl font-semibold tabular-nums">{route.totalStops}</p>
             </CardContent>
           </Card>
-          <Card className="border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
-            <CardContent className="pt-4 pb-3 px-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Route className="h-4 w-4 text-blue-600" />
-                <span className="text-xs font-medium text-blue-700 dark:text-blue-400">
-                  Distance
-                </span>
-              </div>
-              <div className="text-2xl font-extrabold text-blue-700 dark:text-blue-400">
-                {route.totalDistance} km
-              </div>
+          <Card>
+            <CardContent className="pt-5 pb-3 px-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Distance
+              </p>
+              <p className="text-2xl font-semibold tabular-nums">{route.totalDistance} km</p>
             </CardContent>
           </Card>
-          <Card className="border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20">
-            <CardContent className="pt-4 pb-3 px-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="h-4 w-4 text-amber-600" />
-                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                  Est. Time
-                </span>
-              </div>
-              <div className="text-2xl font-extrabold text-amber-700 dark:text-amber-400">
-                {route.totalTime} min
-              </div>
+          <Card>
+            <CardContent className="pt-5 pb-3 px-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Est. Time
+              </p>
+              <p className="text-2xl font-semibold tabular-nums">{route.totalTime} min</p>
             </CardContent>
           </Card>
-          <Card className="border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20">
-            <CardContent className="pt-4 pb-3 px-4">
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingDown className="h-4 w-4 text-purple-600" />
-                <span className="text-xs font-medium text-purple-700 dark:text-purple-400">
-                  Time Saved
-                </span>
-              </div>
-              <div className="text-2xl font-extrabold text-purple-700 dark:text-purple-400">
-                {route.timeSaved} min
-              </div>
+          <Card>
+            <CardContent className="pt-5 pb-3 px-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                Time Saved
+              </p>
+              <p className="text-2xl font-semibold tabular-nums">{route.timeSaved} min</p>
             </CardContent>
           </Card>
         </div>
@@ -304,7 +313,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
       {/* ── Map + Stop List ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map */}
-        <div className="lg:col-span-2 h-[550px] rounded-xl overflow-hidden border border-border/60 shadow-soft relative">
+        <div className="lg:col-span-2 h-[550px] rounded-xl overflow-hidden border border-border shadow-sm relative">
           <MapContainer
             center={collectorPos || defaultCenter}
             zoom={13}
@@ -344,7 +353,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
 
             {/* Stop markers (unoptimized — all reports) */}
             {!route &&
-              reports.map((r) => {
+              displayedReports.map((r) => {
                 const wasteType =
                   r.confirmed_class || r.predicted_class || "mixed";
                 const cat =
@@ -403,7 +412,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
           {/* Map overlay: AI optimizing indicator */}
           {loading && (
             <div className="absolute inset-0 z-[1000] bg-background/60 backdrop-blur-sm flex items-center justify-center">
-              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl glass">
+              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border shadow-sm">
                 <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 <span className="text-sm font-medium">
                   AI is optimizing your route...
@@ -415,7 +424,7 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
 
         {/* Stop List Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="shadow-subtle overflow-hidden border border-border/60 h-[550px] flex flex-col">
+          <Card className="overflow-hidden h-[550px] flex flex-col">
             <CardHeader className="pb-3 flex-shrink-0">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Route className="h-4 w-4 text-emerald-600" />
@@ -506,18 +515,18 @@ export default function RouteOptimizerMap({ reports, defaultCenter }: Props) {
                     );
                   })}
                 </>
-              ) : reports.length === 0 ? (
+              ) : displayedReports.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <MapPin className="h-12 w-12 text-muted-foreground/30 mb-3" />
                   <p className="text-sm font-medium text-muted-foreground">
                     No pickups available
                   </p>
                   <p className="text-xs text-muted-foreground/70 mt-1">
-                    Check back when residents report waste
+                    {assignedOnly ? "No assigned pickups found" : "Check back when residents report waste"}
                   </p>
                 </div>
               ) : (
-                reports.map((r) => {
+                displayedReports.map((r) => {
                   const wasteType =
                     r.confirmed_class || r.predicted_class || "mixed";
                   const cat =

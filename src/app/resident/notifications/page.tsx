@@ -179,7 +179,7 @@ async function NotificationsContent() {
           <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-lg font-medium mb-2">No notifications</h3>
           <p className="text-muted-foreground">
-            You're all caught up! Check back later for updates.
+            You&apos;re all caught up! Check back later for updates.
           </p>
         </CardContent>
       </Card>

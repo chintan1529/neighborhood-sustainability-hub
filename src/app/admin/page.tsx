@@ -1,6 +1,5 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { AnalyticsDashboard } from "@/components/admin/analytics-charts";
-import { Sparkles } from "lucide-react";
 import { RunPredictionButton } from "@/components/admin/run-prediction-button";
 import { getPredictionSummary } from "@/lib/predictive-engine";
 import { RiskZonesWidget } from "@/components/dashboard/risk-zones-widget";
@@ -282,20 +281,17 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight">
             Admin Dashboard
-            <RunPredictionButton />
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-[10px] font-medium">
-              <Sparkles className="h-3 w-3" />
-              Analytics
-            </span>
-          </h2>
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Real-time operational overview
           </p>
         </div>
+        <RunPredictionButton />
       </div>
 
       <AnalyticsDashboard

@@ -787,7 +787,7 @@ export default function CategoryPage() {
               </h3>
               <p className="text-green-700 dark:text-green-300 text-lg leading-relaxed">
                 By properly recycling {category.name.toLowerCase()} waste,
-                you're making a real difference. Every item you recycle
+                you&apos;re making a real difference. Every item you recycle
                 correctly helps protect our planet for future generations.
               </p>
               <div className="flex items-center gap-4 mt-6">

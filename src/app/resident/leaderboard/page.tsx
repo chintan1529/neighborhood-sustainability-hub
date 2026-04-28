@@ -59,7 +59,7 @@ export default async function NeighborhoodsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
+        <h2 className="text-3xl font-semibold tracking-tight flex items-center gap-3">
           Neighborhood Wars <Trophy className="h-7 w-7 text-amber-500" />
         </h2>
         <p className="text-muted-foreground mt-1">

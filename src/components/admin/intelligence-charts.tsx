@@ -177,7 +177,7 @@ function KpiCard({
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               {title}
             </p>
-            <p className="text-3xl font-extrabold tracking-tight">{value}</p>
+            <p className="text-3xl font-semibold tracking-tight">{value}</p>
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           </div>
           <div

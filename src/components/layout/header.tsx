@@ -15,10 +15,10 @@ interface HeaderProps {
 
 export default function Header({ role, user }: HeaderProps) {
   return (
-    <div className="border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-40">
-      <div className="flex h-14 items-center px-4">
+    <div className="border-b border-border bg-card sticky top-0 z-40">
+      <div className="flex h-14 items-center px-4 gap-4">
         <MobileSidebar role={role} />
-        <div className="ml-auto flex items-center space-x-3">
+        <div className="ml-auto flex items-center gap-2">
           <NotificationBell />
           <UserNav user={user} />
         </div>

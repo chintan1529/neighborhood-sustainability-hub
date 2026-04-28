@@ -239,7 +239,7 @@ export default function RecyclerView({
             </DialogTitle>
             <DialogDescription>
               Submit a highly competitive price. The resident cannot see
-              competing bids until they accept. Don't lowball!
+              competing bids until they accept. Don&apos;t lowball!
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">

@@ -258,7 +258,7 @@ export default function OnboardingWizard() {
                   }
                 />
                 <p className="text-xs text-muted-foreground mt-1 text-right">
-                  Maximum distance you're willing to travel for pickups.
+                  Maximum distance you&apos;re willing to travel for pickups.
                 </p>
               </div>
 

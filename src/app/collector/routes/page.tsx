@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles, Brain } from "lucide-react";
+
 
 const RouteOptimizerMap = dynamic(
   () => import("@/components/dashboard/route-optimizer-map"),
@@ -65,30 +65,13 @@ export default async function SmartRoutesPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="relative overflow-hidden rounded-2xl gradient-mesh border border-border/40 p-6 md:p-8">
-        <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-36 h-36 bg-teal-400/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg flex-shrink-0">
-            <Brain className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                AI Smart Routes
-              </h2>
-              <Sparkles className="h-5 w-5 text-emerald-500 animate-pulse" />
-            </div>
-            <p className="text-muted-foreground text-sm max-w-lg leading-relaxed">
-              Let AI optimize your collection route. It analyzes waste urgency,
-              location proximity, and report age to find the fastest path
-              through all pickups.
-            </p>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-px shimmer-line" />
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Smart Routes
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1 max-w-lg">
+          AI-optimized collection routes based on waste urgency, proximity, and report age.
+        </p>
       </div>
 
       {/* Route Optimizer */}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NAV_ITEMS } from "@/lib/constants";
 import { Menu, Leaf } from "lucide-react";
@@ -19,59 +18,68 @@ export function Sidebar({ className, role }: SidebarProps) {
   const pathname = usePathname();
   const items = NAV_ITEMS[role];
 
+  // Group items by section
+  const sections: Record<string, typeof items> = {};
+  items.forEach((item) => {
+    const section = item.section || "Main";
+    if (!sections[section]) sections[section] = [];
+    sections[section].push(item);
+  });
+
   return (
-    <div className={cn("pb-12", className)}>
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          {/* Logo */}
-          <div className="flex items-center px-4 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center mr-2.5">
-              <Leaf className="h-4 w-4 text-white" />
-            </div>
-            <h2 className="text-lg font-bold tracking-tight">NHS</h2>
-          </div>
-
-          {/* Nav Items */}
-          <div className="space-y-1">
-            {items.map((item) => {
-              // @ts-ignore - Lucide icon lookup
-              const Icon = LucideIcons[item.icon];
-              const isActive =
-                pathname === item.href ||
-                (item.href !== `/${role}` && pathname.startsWith(item.href));
-
-              return (
-                <Link key={item.href} href={item.href}>
-                  <div
-                    className={cn(
-                      "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                    )}
-                  >
-                    {/* Active indicator bar */}
-                    {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-primary rounded-r-full" />
-                    )}
-                    {Icon && (
-                      <Icon
-                        className={cn(
-                          "h-4 w-4 transition-colors",
-                          isActive
-                            ? "text-primary"
-                            : "text-muted-foreground group-hover:text-foreground",
-                        )}
-                      />
-                    )}
-                    {item.label}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+    <div className={cn("flex flex-col h-full", className)}>
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 px-5 h-14 border-b border-border shrink-0">
+        <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
+          <Leaf className="h-3.5 w-3.5 text-background" />
         </div>
+        <span className="font-semibold text-sm tracking-tight">NHS</span>
       </div>
+
+      {/* Nav Sections */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+        {Object.entries(sections).map(([section, sectionItems]) => (
+          <div key={section}>
+            <p className="px-3 mb-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              {section}
+            </p>
+            <div className="space-y-0.5">
+              {sectionItems.map((item) => {
+                // @ts-ignore - Lucide icon lookup
+                const Icon = LucideIcons[item.icon];
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== `/${role}` && pathname.startsWith(item.href));
+
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150",
+                        isActive
+                          ? "bg-secondary text-foreground"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                      )}
+                    >
+                      {Icon && (
+                        <Icon
+                          className={cn(
+                            "h-4 w-4 shrink-0",
+                            isActive
+                              ? "text-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        />
+                      )}
+                      {item.label}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
     </div>
   );
 }

@@ -41,7 +41,7 @@ export default async function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>My Badges</CardTitle>
-              <CardDescription>Achievements you've earned</CardDescription>
+              <CardDescription>Achievements you&apos;ve earned</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4">

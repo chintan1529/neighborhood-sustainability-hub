@@ -24,10 +24,10 @@ export default async function CollectorHistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight">
           Collection History
-        </h2>
-        <p className="text-muted-foreground">
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
           View your past completed and cancelled pickups
         </p>
       </div>
@@ -38,7 +38,7 @@ export default async function CollectorHistoryPage() {
         </CardHeader>
         <CardContent>
           {!completedJobs || completedJobs.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground text-center py-8 text-sm">
               No completed jobs yet. Start claiming pickups!
             </p>
           ) : (
@@ -46,23 +46,23 @@ export default async function CollectorHistoryPage() {
               {completedJobs.map((job) => (
                 <div
                   key={job.id}
-                  className="flex justify-between items-center border-b pb-4 last:border-0 last:pb-0"
+                  className="flex justify-between items-center border-b border-border pb-4 last:border-0 last:pb-0"
                 >
                   <div className="space-y-1">
-                    <div className="font-medium capitalize flex items-center gap-2">
+                    <div className="font-medium text-sm capitalize flex items-center gap-2">
                       {job.confirmed_class || job.predicted_class || "Waste"}
                       {job.status === "completed" ? (
                         <Badge
-                          variant="outline"
-                          className="text-green-600 border-green-200 flex items-center gap-1"
+                          variant="secondary"
+                          className="flex items-center gap-1"
                         >
                           <CheckCircle className="h-3 w-3" />
                           Completed
                         </Badge>
                       ) : (
                         <Badge
-                          variant="outline"
-                          className="text-red-600 border-red-200 flex items-center gap-1"
+                          variant="secondary"
+                          className="flex items-center gap-1"
                         >
                           <XCircle className="h-3 w-3" />
                           Cancelled
@@ -80,7 +80,7 @@ export default async function CollectorHistoryPage() {
                   </div>
                   <div className="text-right">
                     {job.status === "completed" && job.points_awarded > 0 && (
-                      <Badge className="bg-nhs-green">
+                      <Badge variant="secondary">
                         +{job.points_awarded} pts
                       </Badge>
                     )}

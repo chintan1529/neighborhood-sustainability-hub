@@ -183,7 +183,7 @@ async function ConversationsContent() {
           <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-lg font-medium mb-2">No messages yet</h3>
           <p className="text-muted-foreground mb-4">
-            Click "New Chat" to start a conversation with a resident or admin.
+            Click &quot;New Chat&quot; to start a conversation with a resident or admin.
           </p>
         </CardContent>
       </Card>

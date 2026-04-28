@@ -123,7 +123,7 @@ export default async function ResidentMarketplacePage() {
             <Tag className="h-10 w-10 text-green-600" />
           </div>
           <h3 className="text-xl font-semibold mb-2">
-            You haven't listed anything yet!
+            You haven&apos;t listed anything yet!
           </h3>
           <p className="text-muted-foreground max-w-sm mb-6">
             Turn your segregated recyclable waste into real value. List plastic,

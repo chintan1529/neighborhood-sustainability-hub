@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { MapPin, Brain, Sparkles, Route } from "lucide-react";
+import { MapPin, Route } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { RiskZonesWidget } from "@/components/dashboard/risk-zones-widget";
 
@@ -20,7 +20,7 @@ export default async function CollectorDashboard() {
     .from("waste_reports")
     .select("*")
     .eq("status", "pending")
-    .order("created_at", { ascending: true }) // Oldest first
+    .order("created_at", { ascending: true })
     .limit(5);
 
   // Fetch priority risk zones
@@ -40,77 +40,51 @@ export default async function CollectorDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Collector Dashboard
-        </h2>
-        <Button asChild>
-          <Link href="/collector/map">
-            <MapPin className="mr-2 h-4 w-4" />
-            View Map
-          </Link>
-        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Collector Dashboard
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your collection queue and routes.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/collector/routes">
+              <Route className="mr-2 h-4 w-4" />
+              Smart Routes
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/collector/map">
+              <MapPin className="mr-2 h-4 w-4" />
+              View Map
+            </Link>
+          </Button>
+        </div>
       </div>
 
+      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardContent className="pt-5">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
               My Active Jobs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{myJobs?.length || 0}</div>
+            </p>
+            <p className="text-2xl font-semibold tabular-nums">{myJobs?.length || 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
+          <CardContent className="pt-5">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
               Pending Requests
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {pendingReports?.length || 0}
-            </div>
+            </p>
+            <p className="text-2xl font-semibold tabular-nums">{pendingReports?.length || 0}</p>
           </CardContent>
         </Card>
       </div>
-
-      {/* AI Route Optimizer CTA */}
-      <Card className="relative overflow-hidden border border-emerald-200 dark:border-emerald-800 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/10">
-        <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
-        <CardContent className="relative py-5 px-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg flex-shrink-0">
-                <Brain className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-sm">
-                    AI Smart Route Optimizer
-                  </h3>
-                  <Sparkles className="h-4 w-4 text-emerald-500 animate-pulse" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Let AI find the fastest collection route through all pickups
-                </p>
-              </div>
-            </div>
-            <Button
-              asChild
-              size="sm"
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border-0 shadow-md gap-1.5"
-            >
-              <Link href="/collector/routes">
-                <Route className="h-4 w-4" />
-                Optimize Route
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Priority Risk Zones */}
       <RiskZonesWidget
@@ -127,35 +101,33 @@ export default async function CollectorDashboard() {
           </CardHeader>
           <CardContent>
             {myJobs?.length === 0 ? (
-              <p className="text-muted-foreground">
-                No active jobs. Claim some from the queue!
-              </p>
+              <div className="text-center py-8">
+                <p className="text-sm text-muted-foreground mb-1">No active jobs</p>
+                <p className="text-xs text-muted-foreground">Claim some from the queue to get started.</p>
+              </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {myJobs?.map((job) => (
                   <div
                     key={job.id}
-                    className="border p-3 rounded-lg flex justify-between items-center bg-muted/20"
+                    className="border border-border p-3 rounded-lg flex justify-between items-center hover:bg-muted/50 transition-colors duration-150"
                   >
                     <div>
-                      <div className="font-medium flex items-center gap-2">
+                      <div className="font-medium text-sm flex items-center gap-2">
                         <span className="capitalize">
                           {job.confirmed_class || "Waste"}
                         </span>
-                        <Badge
-                          variant="outline"
-                          className="text-blue-600 border-blue-200"
-                        >
+                        <Badge variant="secondary" className="text-[11px]">
                           {job.status === "in_progress"
                             ? "Picked Up"
                             : "Assigned"}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                      <p className="text-xs text-muted-foreground truncate max-w-[200px] mt-0.5">
                         {job.address_text}
                       </p>
                     </div>
-                    <Button size="sm" variant="secondary" asChild>
+                    <Button size="sm" variant="outline" asChild>
                       <Link href={`/collector/jobs/${job.id}`}>Update</Link>
                     </Button>
                   </div>
@@ -171,25 +143,26 @@ export default async function CollectorDashboard() {
             <CardTitle>Available Pickup Requests</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-2">
               {pendingReports?.length === 0 ? (
-                <p className="text-muted-foreground">
-                  No pending requests in your area.
-                </p>
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground mb-1">No pending requests</p>
+                  <p className="text-xs text-muted-foreground">Check back later for new pickups.</p>
+                </div>
               ) : (
                 pendingReports?.map((report) => (
                   <div
                     key={report.id}
-                    className="flex justify-between items-center border-b pb-4 last:border-0 last:pb-0"
+                    className="flex justify-between items-center border-b border-border pb-3 last:border-0 last:pb-0"
                   >
-                    <div className="space-y-1">
-                      <div className="font-medium capitalize flex items-center gap-2">
+                    <div className="space-y-0.5">
+                      <div className="font-medium text-sm capitalize flex items-center gap-2">
                         {report.confirmed_class}
                         <span className="text-xs text-muted-foreground font-normal">
                           {formatDate(report.created_at)}
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                      <p className="text-xs text-muted-foreground truncate max-w-[200px]">
                         {report.address_text}
                       </p>
                     </div>
@@ -203,10 +176,8 @@ export default async function CollectorDashboard() {
                         } = await sb.auth.getUser();
                         if (!currentUser) return;
 
-                        // Generate idempotency key
                         const idempotencyKey = `claim-${report.id}-${currentUser.id}-${Date.now()}`;
 
-                        // Call atomic RPC function to claim with correct parameter names
                         await sb.rpc("claim_report", {
                           p_report_id: report.id,
                           p_collector_id: currentUser.id,
