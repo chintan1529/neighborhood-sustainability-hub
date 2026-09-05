@@ -57,7 +57,7 @@ export function Sidebar({ className, role }: SidebarProps) {
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150",
                         isActive
-                          ? "bg-secondary text-foreground"
+                          ? "bg-accent-soft text-foreground border-l-2 border-accent"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                       )}
                     >

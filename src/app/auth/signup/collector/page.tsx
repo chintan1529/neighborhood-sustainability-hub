@@ -69,6 +69,12 @@ export default function CollectorSignupPage() {
           description: result.error,
         });
         setIsLoading(false);
+      } else if (result?.success && result?.needsVerification) {
+        toast({
+          title: "Check your email",
+          description: "We've sent a verification code to your email.",
+        });
+        window.location.href = `/auth/verify-email?email=${encodeURIComponent(result.email || values.email)}`;
       } else if (result?.success && result?.redirectUrl) {
         toast({
           title: "Success",

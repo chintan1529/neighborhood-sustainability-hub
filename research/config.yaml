@@ -1,0 +1,98 @@
+# ============================================================================
+# NHS Research Benchmark Configuration
+# ============================================================================
+# All experiments use these parameters unless overridden.
+# Changing values here regenerates all results deterministically.
+
+random_seed: 42
+
+# --- Synthetic generator defaults ---
+generator:
+  n_zones: 48
+  n_cycles: 20
+  reports_per_zone_mean: 6.0
+  hotspot_persistence: 0.7     # Prob a hotspot stays active next cycle
+  background_noise: 0.15       # Prob any zone has random event
+  seasonality_amplitude: 0.2
+  category_mix: [0.25, 0.20, 0.18, 0.20, 0.17]  # R, F, D, L, T base
+  spike_probability: 0.05      # Event spike per cycle per zone
+
+# --- Engine defaults (matches production TypeScript) ---
+engine:
+  initial_weights: [0.22, 0.24, 0.18, 0.18, 0.18]  # R, F, D, L, T
+  alpha: 0.10                  # Learning rate
+  target_precision: 0.75
+  prediction_threshold: 0.58   # tau
+  convergence_delta: 0.02      # Convergence gating
+  convergence_after: 5         # Min iterations before convergence
+  decay_rate: 0.05             # Learning rate decay: alpha / (1 + decay*iter)
+
+# --- Extended prediction cycles ---
+extended_cycles:
+  n_zones: 48
+  n_iterations: 20
+  seeds: [42, 137, 256, 512, 1024]
+
+# --- Sensitivity sweep ranges ---
+sensitivity:
+  n_zones: [24, 48, 96, 144, 192, 384]
+  n_iterations: [5, 10, 15, 20, 35, 50]
+  tau: [0.40, 0.45, 0.50, 0.55, 0.60, 0.70]
+  alpha: [0.02, 0.05, 0.08, 0.10, 0.20, 0.30]
+  noise: [0.02, 0.05, 0.08, 0.12]
+  hotspot_density: [0.15, 0.25, 0.35, 0.50]
+  seeds: [42, 137, 256, 512, 1024]
+
+# --- Hyperparameter grid search (alpha x tau) ---
+hyperparameter_grid:
+  alpha_values: [0.01, 0.05, 0.10, 0.20]
+  tau_values: [0.40, 0.50, 0.58, 0.70, 0.80, 0.90]
+  n_zones: 48
+  n_iterations: 20
+  seeds: [42, 137, 256, 512, 1024]
+
+# --- Scalability test zone counts ---
+scalability:
+  zone_counts: [48, 96, 192, 384]
+  iterations: 20
+  repetitions: 5
+
+# --- Zone quality test ---
+zone_quality:
+  zone_counts: [48, 96, 192, 384]
+  n_iterations: 20
+  seeds: [42, 137, 256, 512, 1024]
+
+# --- Baseline comparison ---
+baselines:
+  train_ratio: 0.6
+  n_zones: 48
+  n_cycles: 30
+  seeds: [42, 137, 256, 512, 1024]
+
+# --- NYC 311 real data ---
+nyc311:
+  base_url: "https://data.cityofnewyork.us/resource/erm2-nwe9.json"
+  limit: 10000
+  min_date: "2024-06-01"
+  complaint_types:
+    - "Dirty Condition"
+    - "Illegal Dumping"
+    - "Sanitation Condition"
+    - "Overflowing Litter Baskets"
+    - "Dumpster Complaint"
+    - "Litter Basket Complaint"
+  geohash_precision: 5
+
+# --- Chicago 311 real data ---
+chicago311:
+  base_url: "https://data.cityofchicago.org/resource/v6vf-nfxy.json"
+  limit: 10000
+  min_date: "2024-06-01"
+  complaint_types:
+    - "Garbage Cart Maintenance"
+    - "Fly Dumping"
+    - "Garbage Cart Black Maintenance/Replacement"
+    - "Sanitation Code Violation"
+    - "Overflowing City Receptacle"
+  geohash_precision: 5

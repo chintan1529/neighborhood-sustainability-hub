@@ -76,7 +76,7 @@ export async function signup(formData: FormData) {
     return { error: "Invalid input data" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -94,6 +94,21 @@ export async function signup(formData: FormData) {
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Check if email confirmation is required
+  // When confirmations are enabled, signUp returns a user but no session
+  if (
+    signUpData.user &&
+    !signUpData.session &&
+    signUpData.user.identities &&
+    signUpData.user.identities.length > 0
+  ) {
+    return {
+      success: true,
+      needsVerification: true,
+      email,
+    };
   }
 
   const redirectPath =

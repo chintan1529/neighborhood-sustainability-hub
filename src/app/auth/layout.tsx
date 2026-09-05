@@ -10,9 +10,16 @@ export default function AuthLayout({
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       {/* Left Panel — Branding */}
       <div className="relative hidden h-full flex-col bg-foreground p-10 text-background lg:flex dark:border-r overflow-hidden">
+        {/* Accent gradient overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            background: "linear-gradient(135deg, hsl(158 64% 40%) 0%, transparent 50%, hsl(158 64% 40% / 0.3) 100%)",
+          }}
+        />
         {/* Subtle dot pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
               "radial-gradient(circle, currentColor 1px, transparent 1px)",
@@ -23,10 +30,10 @@ export default function AuthLayout({
         {/* Logo */}
         <div className="relative z-20 flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-background/10 flex items-center justify-center">
-              <Leaf className="h-3.5 w-3.5 text-background/70" />
+            <div className="w-7 h-7 rounded-lg bg-accent/20 flex items-center justify-center">
+              <Leaf className="h-3.5 w-3.5 text-accent" />
             </div>
-            <span className="font-semibold text-sm tracking-tight">NHS</span>
+            <span className="font-semibold text-sm tracking-tight font-display">NHS</span>
           </Link>
         </div>
 
@@ -41,10 +48,10 @@ export default function AuthLayout({
               const Icon = item.icon;
               return (
                 <div key={item.label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-background/10 flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-background/60" />
+                  <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
+                    <Icon className="h-4 w-4 text-accent" />
                   </div>
-                  <span className="text-sm text-background/60">
+                  <span className="text-sm text-background/70">
                     {item.label}
                   </span>
                 </div>
@@ -52,7 +59,7 @@ export default function AuthLayout({
             })}
           </div>
 
-          <blockquote className="border-l-2 border-background/20 pl-4">
+          <blockquote className="border-l-2 border-accent/30 pl-4">
             <p className="text-sm text-background/60 leading-relaxed italic">
               &ldquo;This platform has completely transformed how our
               neighborhood manages waste. The AI classification is like magic,

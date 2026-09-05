@@ -5,47 +5,49 @@
 @layer base {
   :root {
     --background: 0 0% 99%;
-    --foreground: 0 0% 9%;
+    --foreground: 220 13% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card-foreground: 220 13% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 0 0% 9%;
+    --popover-foreground: 220 13% 10%;
+    --primary: 220 13% 10%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 160 84% 39%;
+    --secondary: 210 11% 96%;
+    --secondary-foreground: 220 13% 10%;
+    --muted: 210 11% 96%;
+    --muted-foreground: 215 8% 45%;
+    --accent: 158 64% 40%;
     --accent-foreground: 0 0% 100%;
+    --accent-soft: 158 44% 95%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 64%;
-    --radius: 0.5rem;
+    --border: 220 9% 89%;
+    --input: 220 9% 89%;
+    --ring: 158 64% 40%;
+    --radius: 0.625rem;
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --background: 220 13% 7%;
+    --foreground: 210 11% 95%;
+    --card: 220 13% 10%;
+    --card-foreground: 210 11% 95%;
+    --popover: 220 13% 10%;
+    --popover-foreground: 210 11% 95%;
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 160 72% 42%;
+    --primary-foreground: 220 13% 9%;
+    --secondary: 220 10% 15%;
+    --secondary-foreground: 210 11% 95%;
+    --muted: 220 10% 15%;
+    --muted-foreground: 215 8% 55%;
+    --accent: 158 56% 42%;
     --accent-foreground: 0 0% 100%;
+    --accent-soft: 158 30% 12%;
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 40%;
+    --border: 220 10% 18%;
+    --input: 220 10% 18%;
+    --ring: 158 56% 42%;
   }
 }
 
@@ -56,6 +58,11 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Heading font defaults — DM Sans for all headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
   }
 }
 
@@ -110,14 +117,31 @@
     @apply bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-400;
   }
 
-  /* ── Skeleton loader ── */
+  /* ── Skeleton loader — shimmer variant ── */
   .skeleton {
-    @apply animate-pulse bg-muted rounded;
+    @apply rounded;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--muted-foreground) / 0.06) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
   }
 
-  /* ── Focus ring ── */
+  /* ── Focus ring — accent colored ── */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring/30 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* ── Card hover lift ── */
+  .card-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -150,6 +174,28 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Accent soft background utility */
+  .bg-accent-soft {
+    background-color: hsl(var(--accent-soft));
+  }
+
+  /* Fade-in-up animation for scroll reveals */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out both;
+  }
+
+  .animate-fade-in-up-delay-1 {
+    animation: fadeInUp 0.5s ease-out 0.1s both;
+  }
+
+  .animate-fade-in-up-delay-2 {
+    animation: fadeInUp 0.5s ease-out 0.2s both;
+  }
+
+  .animate-fade-in-up-delay-3 {
+    animation: fadeInUp 0.5s ease-out 0.3s both;
+  }
 }
 
 /* ── Leaflet map styles ── */
@@ -164,13 +210,24 @@
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
 }
 
-/* ── Animation Keyframes (minimal) ── */
+/* ── Animation Keyframes ── */
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -182,6 +239,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
@@ -215,3 +281,4 @@
     scroll-behavior: auto !important;
   }
 }
+

@@ -87,3 +87,13 @@ run_check.ts
 .tmp/
 vercel.json.local
 .vercel
+
+# ── Python ────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+env/
+venv/
+

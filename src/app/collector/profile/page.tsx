@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/profile/profile-form";
+import { ChangePasswordForm } from "@/components/profile/change-password-form";
 import {
   Card,
   CardContent,
@@ -89,6 +90,8 @@ export default async function CollectorProfilePage() {
       </div>
 
       <ProfileForm user={user} profile={profile} />
+
+      <ChangePasswordForm />
     </div>
   );
 }

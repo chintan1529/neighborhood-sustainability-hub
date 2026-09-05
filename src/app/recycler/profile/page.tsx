@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User, Store, MapPin, Star } from "lucide-react";
+import { ChangePasswordForm } from "@/components/profile/change-password-form";
 
 export default async function RecyclerProfilePage() {
   const supabase = await createClient();
@@ -165,6 +166,9 @@ export default async function RecyclerProfilePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Change Password */}
+      <ChangePasswordForm />
     </div>
   );
 }

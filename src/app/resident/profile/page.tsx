@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ProfileForm } from "@/components/profile/profile-form";
+import { ChangePasswordForm } from "@/components/profile/change-password-form";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -33,7 +34,10 @@ export default async function ProfilePage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left Column: Interactive Form */}
-        <ProfileForm user={user} profile={profile} />
+        <div className="space-y-6">
+          <ProfileForm user={user} profile={profile} />
+          <ChangePasswordForm />
+        </div>
 
         {/* Right Column: Read-only Stats & Badges */}
         <div className="space-y-6">

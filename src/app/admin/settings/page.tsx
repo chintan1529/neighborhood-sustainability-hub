@@ -13,9 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Bell, MapPin, Trophy, Loader2 } from "lucide-react";
+import { Settings, Bell, MapPin, Trophy, Loader2, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ChangePasswordForm } from "@/components/profile/change-password-form";
 
 export default function AdminSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -119,6 +120,10 @@ export default function AdminSettingsPage() {
           <TabsTrigger value="neighborhood">
             <MapPin className="h-4 w-4 mr-2" />
             Neighborhood
+          </TabsTrigger>
+          <TabsTrigger value="security">
+            <Lock className="h-4 w-4 mr-2" />
+            Security
           </TabsTrigger>
         </TabsList>
 
@@ -373,6 +378,11 @@ export default function AdminSettingsPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Security Settings */}
+        <TabsContent value="security">
+          <ChangePasswordForm />
         </TabsContent>
       </Tabs>
     </div>
